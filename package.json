@@ -1,0 +1,12 @@
+{
+	"name": "template_bot",
+	"version": "Pre-Release-1.0.0",
+	"description": "A discord bot template for developers to clone so that they can start programming on top of a bot with basic functionality.",
+	"main": "bot.js",
+	"author": "ShockingShots",
+	"dependencies": {
+		"discord.js": "^12.2.0",
+		"prompt": "^1.0.0",
+		"winston": "^3.3.3"
+	}
+}
