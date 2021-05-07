@@ -1,5 +1,6 @@
 // Library & Custom Variable
 const Command = require("./miscellaneous/command");
+const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
 const ServerPrefixesManager = require("./managers/" + 
 									  "serverPrefixesManager");
 
@@ -39,6 +40,11 @@ class Prefix extends Command
 	getCommandAbbreviations()
 	{
 		return super.getCommandAbbreviations("prefix", "pref");
+	}
+	
+	getRequiredPermissions()
+	{
+		return [];
 	}
 	
 	

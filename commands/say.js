@@ -1,5 +1,6 @@
 // Library & Custom Variable
 const Command = require("./miscellaneous/command");
+const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
 
 class Say extends Command
 {
@@ -31,6 +32,11 @@ class Say extends Command
 	getCommandAbbreviations()
 	{
 		return super.getCommandAbbreviations("say", "repeat");
+	}
+	
+	getRequiredPermissions()
+	{
+		return [];
 	}
 	
 	

@@ -1,5 +1,6 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
+const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
 const InviteInfo = require('./customization/inviteInfo');
 
 
@@ -24,6 +25,11 @@ class Invite extends Command
 	getCommandAbbreviations()
 	{
 		return super.getCommandAbbreviations("invite", "inv");
+	}
+	
+	getRequiredPermissions()
+	{
+		return [];
 	}
 	
 	

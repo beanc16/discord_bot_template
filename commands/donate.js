@@ -1,5 +1,6 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
+const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
 const DonationInfo = require('./customization/donationInfo');
 
 
@@ -25,6 +26,11 @@ class Donate extends Command
 	getCommandAbbreviations()
 	{
 		return super.getCommandAbbreviations("donate", "donation");
+	}
+	
+	getRequiredPermissions()
+	{
+		return [];
 	}
 	
 	

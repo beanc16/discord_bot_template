@@ -1,5 +1,6 @@
 // Library & Custom Variable
 const Command = require("./miscellaneous/command");
+const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
 
 
 
@@ -21,6 +22,11 @@ class Ping extends Command
 	getCommandAbbreviations()
 	{
 		return super.getCommandAbbreviations("ping");
+	}
+	
+	getRequiredPermissions()
+	{
+		return [];
 	}
 	
 	

@@ -23,6 +23,11 @@ class Command
 						"implemented!");
 	}
 	
+	getRequiredPermissions()
+	{
+		return [];
+	}
+	
 	
 	
 	/**********************
@@ -65,6 +70,8 @@ class Command
 								 args, prefix),
 
 			commandAbbreviations: this.getCommandAbbreviations(),
+			
+			requiredPerms: this.getRequiredPermissions(),
 			
 			
 			

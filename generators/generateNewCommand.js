@@ -9,6 +9,7 @@
 const prompt = require("prompt");	// For reading command line input
 const path = require("path");
 const FileManager = require("../custom_modules/fileManagement");
+const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
 
 // Custom Variable
 const commandTemplateFilePath = path.join(__dirname, 
@@ -73,6 +74,20 @@ const schema = {
 					 "help example",
 		},
 		
+		// Permissions
+		permissions: {
+			message: "Enter the numbers below that correspond to " + 
+					 "the permissions required to use this command " + 
+					 "as a comma separated list.\n\n" +
+					 
+					 PermissionsEnum.getAsString() + "\n\n" +
+					 
+					 "Example:\n" + 
+					 "0, 8, 22, 5\n\n" + 
+					 
+					 "command required permissions",
+		},
+		
 	}
 };
 
@@ -92,6 +107,9 @@ prompt.get(schema, function (err, result)
 	
 	// Add a capitalized version of the command name to the result
 	result["nameCapital"] = capitalizeFirstLetter(result.name);
+	
+	// Convert the permissions to the enum form
+	result.permissions = preparePermissions(result);
 	
 	let commandTemplate = FileManager
 								.readFileSync(commandTemplateFilePath);
@@ -130,6 +148,25 @@ function prepareAbbreviations(result)
 	abbreviations = array.join(", ");
 	
 	return abbreviations;
+}
+
+function preparePermissions(result)
+{
+	let permissions = result.permissions;
+	
+	if (permissions.length == 0)
+	{
+		return "";
+	}
+	
+	// Split the string of permissions into an array
+	permissions = permissions.split(",");
+	
+	// Remove spacing from each element in the array
+	permissions = permissions.map(element => element.trim());
+	
+	// Return it as output to put into the file
+	return PermissionsEnum.convertFromIndexArray(permissions);
 }
 
 function capitalizeFirstLetter(str)

@@ -1,5 +1,6 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
+const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
 const TextHelpers = require('../helpers/textHelpers');
 const CommandNamesSingleton = require("../singletons/" +
 									  "CommandNamesSingleton");
@@ -46,6 +47,11 @@ class Help extends Command
 	getCommandAbbreviations()
 	{
 		return super.getCommandAbbreviations("help", "h");
+	}
+	
+	getRequiredPermissions()
+	{
+		return [];
 	}
 	
 	

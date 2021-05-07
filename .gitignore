@@ -1,6 +1,9 @@
 # Custom
 .idea/
 config.json
+ND Config/
+Documentation/
+
 
 # Logs
 logs

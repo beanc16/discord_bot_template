@@ -1,5 +1,6 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
+const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
 const TextHelpers = require('../helpers/textHelpers');
 const AboutInfo = require('./customization/aboutInfo');
 const Package = require('../package');
@@ -43,6 +44,11 @@ class About extends Command
 	getCommandAbbreviations()
 	{
 		return super.getCommandAbbreviations("about", "info");
+	}
+	
+	getRequiredPermissions()
+	{
+		return [];
 	}
 	
 	

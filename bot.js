@@ -6,6 +6,7 @@ const ServerPrefixesManager =
 				require("./commands/managers/serverPrefixesManager");
 const CommandAbbreviationsSingleton = 
 				require("./singletons/CommandAbbreviationsSingleton");
+const PermissionsHelpers = require("./helpers/PermissionsHelpers");
 
 // Libraries
 const Discord = require('discord.js');
@@ -122,15 +123,27 @@ function runCommands(userCommand, user, userId, channelId, message,
 	// The command DOES exist
 	if (commandName != null)
 	{
-		let command = require("./commands/" + commandName);
-		command.run(bot, user, userId, channelId, message, args, 
-					prefix);
+		const command = require("./commands/" + commandName);
+		
+		// Check if user has permission to run the command
+		const permValidation = PermissionsHelpers
+								.msgSenderHasAllPerms(command, message);
+		
+		if (permValidation.hasAllPerms)
+		{
+			command.run(bot, user, userId, channelId, message, args, 
+						prefix);
+		}
+		else
+		{
+			missingPermsMessage(message, permValidation.missingPerms);
+		}
 	}
 	
 	// The command DOES NOT exist
 	else
 	{
-		noCommandFoundMessage(userId, channelId, message, prefix);
+		noCommandFoundMessage(message, prefix);
 	}
 }
 
@@ -141,7 +154,7 @@ function getCommandToRun(userCommand)
 }
 
 // Tell the user that the command wasn't found
-function noCommandFoundMessage(userID, channelID, message, prefix)
+function noCommandFoundMessage(message, prefix)
 {
     // Send a message to the channel
     message.channel.send("Unknown command\n" +
@@ -150,4 +163,25 @@ function noCommandFoundMessage(userID, channelID, message, prefix)
 						 "Or, check `" + prefix + "help " +
                          "commandName` for help with a specific " + 
 						 "command");
+}
+
+// Tell the user the permissions they're missing(
+function missingPermsMessage(message, missingPermsArray)
+{
+	let missingPermsStr = "";
+	for (let i = 0; i < missingPermsArray.length; i++)
+	{
+		missingPermsStr += missingPermsArray[i];
+		
+		// Add a comma after all missing perms except for the last
+		if (i != missingPermsArray.length - 1)
+		{
+			missingPermsStr +=  ", ";
+		}
+	}
+	
+	// Send a message to the channel
+    message.channel.send("You cannot use that command because " + 
+						 "you're missing the following " + 
+						 "permissions:\n" + missingPermsStr);
 }
