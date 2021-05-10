@@ -44,7 +44,7 @@ class Prefix extends Command
 	
 	getRequiredPermissions()
 	{
-		return [];
+		return [PermissionsEnum.MANAGE_GUILD];
 	}
 	
 	

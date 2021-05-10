@@ -93,13 +93,13 @@ function sendBaseHelpMessage(bot, userID, channelID, prefix, message)
     // Set base help message to send
     let helpMessage =
 		"To run a command, use " +
-        TextHelpers.getCodeOneLineText(prefix + "commandName") + "\n" +
+        TextHelpers.getCodeOneLineText(prefix + "commandName") + 
+		" or " + TextHelpers.getUserPing(bot.user.id) + 
+		" commandName" + "\n" + 
 		"For example, " + TextHelpers.getCodeOneLineText(
 			prefix + "ping"
 		) + " or " +
-		TextHelpers.getCodeOneLineText(
-			prefix + "prefix !"
-		) + "\n\n" +
+		TextHelpers.getUserPing(bot.user.id) + " help " + "\n\n" +
 
 		"Use " + TextHelpers.getCodeOneLineText(
 			prefix + "help commandName"
@@ -112,12 +112,12 @@ function sendBaseHelpMessage(bot, userID, channelID, prefix, message)
 			prefix + "help prefix"
 		) + "\n\n" +
 
-		"Note, NO commands are case sensitive. " +
+		"Note, commands are NOT case sensitive. " +
 		"You can type them with any combination of " +
 		"uppercase and lowercase letters, as long as " +
 		"the command is still spelled correctly.\n\n" +
 
-		TextHelpers.getBoldText("All Commands") + "\n```";
+		TextHelpers.getBoldText("All Commands") + "\n```\n";
 
     // Add each command to the help message
 	let allCommands = CommandNamesSingleton.instance.getCommands();
