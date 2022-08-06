@@ -16,7 +16,7 @@ const { logger } = require("@beanc16/logger");
 // Custom Variable
 const customizationFolderPath = path.join(__dirname,
 										"../commands/customization/");
-const defaultPrefix = "$";
+const defaultPrefix = "bot.";
 const defaultInvLink = "__PLEASE ADD INVITE LINK.__";
 const defaultDonationLink = "__PLEASE ADD DONATION LINK.__";
 const defaultCreationPurpose = "__PLEASE ADD CREATION PURPOSE.__";
