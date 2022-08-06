@@ -3,7 +3,7 @@ require('dotenv').config();
 
 // Custom variables
 const TextHelpers = require('./helpers/textHelpers');
-const ServerPrefixesManager =  require("./commands/managers/serverPrefixesManager");
+const ServerPrefixesManagerV2 =  require("./commands/managers/serverPrefixesManagerV2");
 const CommandAbbreviationsSingleton =  require("./singletons/CommandAbbreviationsSingleton");
 const PermissionsHelpers = require("./helpers/PermissionsHelpers");
 
@@ -56,31 +56,38 @@ bot.on('message', function (message)
 	*/
 
 	// Try to initialize the guild's prefix if it doesn't exist
-	let prefix = ServerPrefixesManager.tryInitializePrefix(message);
-
-	// Add "d" before the period for the development version of this bot
-	if (process.env.STAGE === "dev")
+	ServerPrefixesManagerV2.getPrefix(message)
+	.then(function (prefix)
 	{
-		const index = prefix.indexOf(".");
-		prefix = `${prefix.substr(0, index)}d.`;
-	}
-	
-    if (prefix && (message.content.startsWith(prefix) || botWasPinged(message))
-		&& !message.author.bot)
-    {
-		// Get the message as an array, excluding the ping or prefix
-		let args = getArgs(message, prefix);
+		// Add "d" before the period for the development version of this bot
+		if (process.env.STAGE === "dev")
+		{
+			const index = prefix.indexOf(".");
+			prefix = `${prefix.substr(0, index)}d.`;
+		}
+		
+		if (prefix && (message.content.startsWith(prefix) || botWasPinged(message))
+			&& !message.author.bot)
+		{
+			// Get the message as an array, excluding the ping or prefix
+			let args = getArgs(message, prefix);
 
-        // Set the command that was used
-        const command = args[0].toLowerCase();
+			// Set the command that was used
+			const command = args[0].toLowerCase();
 
-        // Remove the command from the arguments
-        args.shift();
+			// Remove the command from the arguments
+			args.shift();
 
-        // Run the command
-        runCommands(command, message.author, message.author.id, 
-					message.channel.id, message, args, prefix);
-    }
+			// Run the command
+			runCommands(command, message.author, message.author.id, 
+						message.channel.id, message, args, prefix);
+		}
+	})
+	.catch(function (err)
+	{
+		// TODO: Handle err
+		logger.error(err);
+	});
 });
 
 
@@ -117,14 +124,14 @@ function getArgs(message, prefix)
 	{
 		return message.content.slice(prefix.length)
 							  .trim()
-							  .split(/ \n+/g);
+							  .split(/[ \n]+/g);
 	}
 	
 	// Bot was pinged, remove the ping and all spacing
 	const userPing = TextHelpers.getUserPing(message.author.id);
 	return message.content.slice(userPing.length + 1)
 						  .trim()
-						  .split(/ \n+/g);
+						  .split(/[ \n]+/g);
 }
 
 function runCommands(userCommand, user, userId, channelId, message, 

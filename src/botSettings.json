@@ -1,0 +1,11 @@
+{
+	"botName": "Template Bot",
+	"author": "ShockingShot",
+	"defaultPrefix": "bot.",
+    "appId": "62e0a711b3956b2d1a28c0b3",
+    "allowCommandsInDms": false,
+	"creationPurpose": "__PLEASE ADD CREATION PURPOSE.__",
+	"homeServerInvite": "__PLEASE ADD HOME INVITE LINK.__",
+	"donationLink": "__PLEASE ADD DONATION LINK.__",
+	"inviteLink": "__PLEASE ADD INVITE LINK.__"
+}
