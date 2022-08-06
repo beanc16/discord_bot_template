@@ -6,6 +6,7 @@ const TextHelpers = require('./helpers/textHelpers');
 const ServerPrefixesManagerV2 =  require("./commands/managers/serverPrefixesManagerV2");
 const CommandAbbreviationsSingleton =  require("./singletons/CommandAbbreviationsSingleton");
 const PermissionsHelpers = require("./helpers/PermissionsHelpers");
+const { allowCommandsInDms } = require("./src/botSettings.json");
 
 // Libraries
 const Discord = require('discord.js');
@@ -46,14 +47,15 @@ bot.on('ready', function (evt)
 
 bot.on('message', function (message)
 {
-	/*
 	// Only respond to messages that aren't in DMs
-	if (message.channel.type === "dm" && !message.author.bot)
+	if (
+		allowCommandsInDms !== true &&
+		message.channel.type === "dm" && !message.author.bot
+	)
 	{
 		message.channel.send("I'm a snobby bot and I refuse to run commands in DMs");
 		return;
 	}
-	*/
 
 	// Try to initialize the guild's prefix if it doesn't exist
 	ServerPrefixesManagerV2.getPrefix(message)

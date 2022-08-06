@@ -11,7 +11,9 @@ async function getPrefix(message)
 {
     return new Promise(function (resolve, reject)
     {
-        const serverId = message.guild.id;
+        const serverId = (message.channel.type === "dm")
+            ? message.channel.id    // Use channel ID for DMs
+            : message.guild.id;     // Use server ID for non-DMs
         _tryResolvePrefixFromCache(resolve, serverId);
     
         // The prefix is not cached, so go get it.
@@ -26,7 +28,7 @@ async function getPrefix(message)
         })
         .catch(function (err)
         {
-            if (err.statusCode && err.statusCode === 404)
+            if (err.response && err.response.status && err.response.status === 404)
             {
                 _handle404(resolve, reject, err, serverId);
             }
@@ -64,15 +66,17 @@ function _resolvePrefix(resolve, serverId, prefix)
 
 function _handle404(resolve, reject, err, serverId)
 {
+    const { data } = err.response;
+
     // App DOES NOT exist.
-    if (err.message && err.message.toLowerCase().includes("no apps were found"))
+    if (data.message && data.message.toLowerCase().includes("no apps were found"))
     {
         // TODO: Handle app not existing.
         reject("Not yet handling an app not existing");
     }
 
     // App & Bot DO exist, but the current server DOES NOT.
-    else if (err.message && err.message.toLowerCase().includes("does not contain a server"))
+    else if (data.message && data.message.toLowerCase().includes("does not contain a server"))
     {
         DiscordBotSettingsMicroservice.v1.upsertBotPrefix({
             appId,
@@ -83,10 +87,16 @@ function _handle404(resolve, reject, err, serverId)
         {
             _resolvePrefix(resolve, serverId, defaultPrefix);
         })
-        .catch(function (err)
+        .catch(function (err2)
         {
-            reject(err);
+            reject(err2);
         })
+    }
+
+    // Unknown error occurred.
+    else
+    {
+        // TODO: Handle unknown error.
     }
 }
 
