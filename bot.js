@@ -1,28 +1,21 @@
+// Env variables
+require('dotenv').config();
+
 // Custom variables
 const TextHelpers = require('./helpers/textHelpers');
-const Config = require('./config.json');
-const Package = require('./package.json');
-const ServerPrefixesManager = 
-				require("./commands/managers/serverPrefixesManager");
-const CommandAbbreviationsSingleton = 
-				require("./singletons/CommandAbbreviationsSingleton");
+const ServerPrefixesManager =  require("./commands/managers/serverPrefixesManager");
+const CommandAbbreviationsSingleton =  require("./singletons/CommandAbbreviationsSingleton");
 const PermissionsHelpers = require("./helpers/PermissionsHelpers");
 
 // Libraries
 const Discord = require('discord.js');
-const logger = require('winston');
 
 // Initialize Discord Bot
 const bot = new Discord.Client();
-bot.login(Config.token);
+bot.login(process.env.TOKEN);
 
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(new logger.transports.Console,
-{
-    colorize: true
-});
-logger.level = 'debug';
+// Telemetry
+const { logger } = require("@beanc16/logger");
 
 
 
@@ -38,7 +31,11 @@ logger.level = 'debug';
 
 bot.on('ready', function (evt)
 {
-	console.log(Package.name + " has connected.");
+	const devStr = (process.env.STAGE && process.env.STAGE === "dev")
+		? "-dev"
+		: "";
+
+	logger.info(`${process.env.APPLICATION_NAME}${devStr} has connected.`);
 });
 
 
@@ -49,10 +46,26 @@ bot.on('ready', function (evt)
 
 bot.on('message', function (message)
 {
+	/*
+	// Only respond to messages that aren't in DMs
+	if (message.channel.type === "dm" && !message.author.bot)
+	{
+		message.channel.send("I'm a snobby bot and I refuse to run commands in DMs");
+		return;
+	}
+	*/
+
 	// Try to initialize the guild's prefix if it doesn't exist
 	let prefix = ServerPrefixesManager.tryInitializePrefix(message);
+
+	// Add "d" before the period for the development version of this bot
+	if (process.env.STAGE === "dev")
+	{
+		const index = prefix.indexOf(".");
+		prefix = `${prefix.substr(0, index)}d.`;
+	}
 	
-    if ((message.content.startsWith(prefix) || botWasPinged(message))
+    if (prefix && (message.content.startsWith(prefix) || botWasPinged(message))
 		&& !message.author.bot)
     {
 		// Get the message as an array, excluding the ping or prefix
@@ -104,14 +117,14 @@ function getArgs(message, prefix)
 	{
 		return message.content.slice(prefix.length)
 							  .trim()
-							  .split(/ +/g);
+							  .split(/ \n+/g);
 	}
 	
 	// Bot was pinged, remove the ping and all spacing
 	const userPing = TextHelpers.getUserPing(message.author.id);
 	return message.content.slice(userPing.length + 1)
 						  .trim()
-						  .split(/ +/g);
+						  .split(/ \n+/g);
 }
 
 function runCommands(userCommand, user, userId, channelId, message, 
@@ -121,7 +134,7 @@ function runCommands(userCommand, user, userId, channelId, message,
     const commandName = getCommandToRun(userCommand);
 	
 	// The command DOES exist
-	if (commandName != null)
+	if (commandName)
 	{
 		const command = require("./commands/" + commandName);
 		
