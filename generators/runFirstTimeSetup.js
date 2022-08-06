@@ -10,6 +10,9 @@ const prompt = require("prompt");	// For reading command line input
 const path = require("path");
 const FileManager = require("../custom_modules/fileManagement");
 
+// Telemetry
+const { logger } = require("@beanc16/logger");
+
 // Custom Variable
 const customizationFolderPath = path.join(__dirname,
 										"../commands/customization/");
@@ -106,7 +109,7 @@ prompt.get(schema, function (err, result)
 {
 	if (err)
 	{
-		console.log(err);
+		logger.error("Error running first time setup", err);
 		return 1;
 	}
 

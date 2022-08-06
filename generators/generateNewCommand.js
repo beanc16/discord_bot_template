@@ -11,6 +11,9 @@ const path = require("path");
 const FileManager = require("../custom_modules/fileManagement");
 const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
 
+// Telemetry
+const { logger } = require("@beanc16/logger");
+
 // Custom Variable
 const commandTemplateFilePath = path.join(__dirname, 
 										  "./commandTemplate.txt");
@@ -98,7 +101,7 @@ prompt.get(schema, function (err, result)
 {
 	if (err)
 	{
-		console.log(err);
+		logger.error("Error generating new command", err);
 		return 1;
 	}
 	
