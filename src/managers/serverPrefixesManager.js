@@ -1,8 +1,5 @@
 const { DiscordBotSettingsMicroservice } = require("@beanc16/microservices-abstraction");
-const {
-    appId,
-    defaultPrefix,
-} = require("../botSettings.json");
+const { defaultPrefix } = require("../botSettings.json");
 const serverPrefixesCache = {};
 
 
@@ -16,7 +13,7 @@ async function getPrefix(message)
     
         // The prefix is not cached, so go get it.
         DiscordBotSettingsMicroservice.v1.get({
-            appId,
+            appId: process.env.APP_ID,
             serverId,
         })
         .then(function (response)
@@ -46,7 +43,7 @@ async function setPrefix(message, newPrefix)
         const serverId = _getServerId(message);
         
         DiscordBotSettingsMicroservice.v1.upsertBotPrefix({
-            appId,
+            appId: process.env.APP_ID,
             serverId,
             serverPrefix: newPrefix,
         })
@@ -106,7 +103,7 @@ function _handle404(resolve, reject, err, serverId)
     else if (data.message && data.message.toLowerCase().includes("does not contain a server"))
     {
         DiscordBotSettingsMicroservice.v1.upsertBotPrefix({
-            appId,
+            appId: process.env.APP_ID,
             serverId,
             serverPrefix: defaultPrefix,
         })
