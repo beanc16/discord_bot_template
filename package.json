@@ -7,7 +7,7 @@
 	"scripts": {
 		"start": "node bot.js",
 		"start-dev": "nodemon bot.js",
-		"debug-dependencies": "node dev_tools/madge.js",
+		"debug-dependencies": "node src/dev_tools/madge.js",
 		"generate-new-command": "node generators/generateNewCommand.js",
 		"run-first-time-setup": "node generators/runFirstTimeSetup.js",
 		"version": "git add -A",
