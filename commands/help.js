@@ -1,9 +1,8 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
 const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
-const TextHelpers = require('../helpers/textHelpers');
-const CommandNamesSingleton = require("../singletons/" +
-									  "CommandNamesSingleton");
+const { Text } = require("@beanc16/discordjs-helpers");
+const CommandNamesSingleton = require("../singletons/CommandNamesSingleton");
 
 
 
@@ -19,7 +18,7 @@ class Help extends Command
         // There's no arguments
         if (args.length === 0)
         {
-            sendBaseHelpMessage(bot, userId, channelId, prefix, 
+            _sendBaseHelpMessage(bot, userId, channelId, prefix, 
 								message);
         }
 
@@ -31,16 +30,13 @@ class Help extends Command
 			if (trie.hasWord(command))
 			{
 				let commandClass = require("./" + command);
-				getCommandsHelpMessage(commandClass, bot, userId, 
+				_getCommandsHelpMessage(commandClass, bot, userId, 
 									   channelId, prefix, message);
 				return;
 			}
 			
 			// The command DOES NOT exist
-			message.channel.send("\nNo help information on that " + 
-								 "command is available.\n" + 
-								 "Please check `" + prefix + "help` " +
-								 "to view all commands.");
+			message.channel.send(_getCommandDoesNotExistMessage(prefix));
         }
     }
 	
@@ -67,14 +63,12 @@ class Help extends Command
 	
 	getHelpDescription()
 	{
-        return "Display a list of available commands or detailed " + 
-			   "information about a specific command.";
+        return "Display a list of available commands or detailed information about a specific command.";
 	}
 	
     getHelpExamples()
     {
-		return super.getHelpExamples("help", "help ping", 
-									 "help prefix");
+		return super.getHelpExamples("help", "help ping", "help prefix");
     }
 }
 
@@ -88,43 +82,29 @@ module.exports = thisCommand.getAsJson();
 
 
 // Send help message (when there's no arguments)
-function sendBaseHelpMessage(bot, userID, channelID, prefix, message)
+function _sendBaseHelpMessage(bot, userID, channelID, prefix, message)
 {
-    // Set base help message to send
-    let helpMessage =
-		"To run a command, use " +
-        TextHelpers.getCodeOneLineText(prefix + "commandName") + 
-		" or " + TextHelpers.getUserPing(bot.user.id) + 
-		" commandName" + "\n" + 
-		"For example, " + TextHelpers.getCodeOneLineText(
-			prefix + "ping"
-		) + " or " +
-		TextHelpers.getUserPing(bot.user.id) + " help " + "\n\n" +
+	const botPing = Text.Ping.user(bot.user.id);
 
-		"Use " + TextHelpers.getCodeOneLineText(
-			prefix + "help commandName"
-		) +
-		" for more information on a specific command\n" +
-		"For example, " + TextHelpers.getCodeOneLineText(
-			prefix + "help ping"
-		) + " or " +
-		TextHelpers.getCodeOneLineText(
-			prefix + "help prefix"
-		) + "\n\n" +
-
-		"Note, commands are NOT case sensitive. " +
-		"You can type them with any combination of " +
-		"uppercase and lowercase letters, as long as " +
-		"the command is still spelled correctly.\n\n" +
-
-		TextHelpers.getBoldText("All Commands") + "\n```\n";
+	let helpMessage =
+		`To run a command, use ${Text.Code.oneLine(`${prefix}commandName`)} or ${botPing} commandName
+		For example, ${Text.Code.oneLine(`${prefix}ping`)} or ${botPing} help
+		
+		Use ${Text.Code.oneLine(`${prefix}help commandName`)} for more information on a specific command
+		For example, ${Text.Code.oneLine(`${prefix}help ping`)} or ${Text.Code.oneLine(`${prefix}help prefix`)}
+		
+		Note, commands are NOT case sensitive. You can type them with any combination of uppercase and lowercase letters, as long as the command is still spelled correctly.
+		
+		${Text.bold("All Command")}
+		\`\`\`
+		`.split("\t").join("");	// Remove tabs.
 
     // Add each command to the help message
-	let allCommands = CommandNamesSingleton.instance.getCommands();
-    for (let i = 0; i < allCommands.length; i++)
-    {
-        helpMessage += prefix + allCommands[i] + "\n";
-    }
+	const allCommands = CommandNamesSingleton.instance.getCommands();
+	allCommands.forEach(function (command)
+	{
+		helpMessage += `${prefix}${command}\n`;
+	});
 
     // Close the multi-line text
     helpMessage += "```";
@@ -135,8 +115,7 @@ function sendBaseHelpMessage(bot, userID, channelID, prefix, message)
 
 
 
-function getCommandsHelpMessage(command, bot, userID, channelID, 
-								prefix, message)
+function _getCommandsHelpMessage(command, bot, userID, channelID, prefix, message)
 {
 	// Get command's info
 	let commandName = command.commandName;
@@ -145,37 +124,51 @@ function getCommandsHelpMessage(command, bot, userID, channelID,
 	let examples = command.helpExamples;
 
 	// Send message with info
-	sendSpecificHelpMessage(bot, userID, channelID, prefix, 
+	_sendSpecificHelpMessage(bot, userID, channelID, prefix, 
 							commandName, abbreviations, description, 
 							examples, message);
 }
 
-function sendSpecificHelpMessage(bot, userID, channelID, prefix, 
-								 commandName, abbreviations,
-                                 description, examples, message)
+function _sendSpecificHelpMessage(bot, userID, channelID, prefix, 
+								commandName, abbreviations,
+								description, examples, message)
 {
-    // Set base help message to send
-    let helpMessage = "**" + prefix + commandName + "**\n\n" +
-                      "*Description:*\n" + description + "\n\n" + 
-					  "*Abbreviations:*\n";
+	const abbreviationsStr = abbreviations.reduce(function (acc, cur)
+	{
+		acc += `${Text.Code.oneLine(`${prefix}${cur}`)}\n`;
+		return acc;
+	}, `\n${Text.italic("Abbreviations:")}\n`);
 
-    // Loop over each of the command's abbreviations
-    for (let i = 0; i < abbreviations.length; i++)
-    {
-        // Add the current prefix to the message of abbreviations
-        helpMessage += "`" + prefix + abbreviations[i] + "`\n";
-    }
+	const examplesStr = examples.reduce(function (acc, cur)
+	{
+		acc += `${Text.Code.oneLine(`${prefix}${cur}`)}\n`;
+		return acc;
+	}, `\n${Text.italic("Examples")}:\n`);
 
-    // Add the details and examples
-    helpMessage += "\n*Examples:*\n";
-
-    // Loop over each of the command's examples
-    for (let i = 0; i < examples.length; i++)
-    {
-        // Add the current prefix to the message of examples
-        helpMessage += "`" + prefix + examples[i] + "`\n";
-    }
+	let helpMessage =
+		`${Text.bold(`${prefix}${commandName}`)}
+		
+		${Text.italic("Description:")}
+		${description}
+		`.split("\t").join("");	// Remove tabs.
+	
+	if (abbreviations.length > 0)
+	{
+		helpMessage += abbreviationsStr;
+	}
+	
+	if (examples.length > 0)
+	{
+		helpMessage += examplesStr;
+	}
 
     // Send a message to the channel
     message.channel.send(helpMessage);
+}
+
+function _getCommandDoesNotExistMessage(prefix)
+{
+	return `No help information on that command is available.
+			Please check ${Text.Code.oneLine(`${prefix}help`)} to view all commands.`
+			.split("\t").join("");	// Remove tabs.
 }
