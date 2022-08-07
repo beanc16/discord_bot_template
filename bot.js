@@ -3,7 +3,7 @@ require('dotenv').config();
 
 // Custom variables
 const TextHelpers = require('./helpers/textHelpers');
-const ServerPrefixesManagerV2 =  require("./commands/managers/serverPrefixesManagerV2");
+const ServerPrefixesManagerV2 =  require("./src/managers/serverPrefixesManagerV2");
 const CommandAbbreviationsSingleton =  require("./singletons/CommandAbbreviationsSingleton");
 const PermissionsHelpers = require("./helpers/PermissionsHelpers");
 const { allowCommandsInDms } = require("./src/botSettings.json");
