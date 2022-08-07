@@ -1,6 +1,6 @@
 // Library & Custom Variable
 const Command = require("./miscellaneous/command");
-const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
+const { permissionsEnum } = require("@beanc16/discordjs-helpers");
 const ServerPrefixesManagerV2 = require("../src/managers/serverPrefixesManagerV2");
 const { logger } = require("@beanc16/logger");
 
@@ -46,7 +46,7 @@ class Prefix extends Command
 	
 	getRequiredPermissions()
 	{
-		return [PermissionsEnum.MANAGE_GUILD];
+		return [permissionsEnum.MANAGE_GUILD];
 	}
 	
 	

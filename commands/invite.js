@@ -1,6 +1,6 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
-const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
+const { permissionsEnum } = require("@beanc16/discordjs-helpers");
 const InviteInfo = require('./customization/inviteInfo');
 
 

@@ -9,7 +9,7 @@
 const prompt = require("prompt");	// For reading command line input
 const path = require("path");
 const FileManager = require("../custom_modules/fileManagement");
-const PermissionsEnum = require("../helpers/enums/PermissionsEnum");
+const { permissionsEnum } = require("@beanc16/discordjs-helpers");
 
 // Telemetry
 const { logger } = require("@beanc16/logger");
@@ -83,7 +83,7 @@ const schema = {
 					 "the permissions required to use this command " + 
 					 "as a comma separated list.\n\n" +
 					 
-					 PermissionsEnum.getAsString() + "\n\n" +
+					 permissionsEnum.getAsString() + "\n\n" +
 					 
 					 "Example:\n" + 
 					 "0, 8, 22, 5\n\n" + 
@@ -169,7 +169,7 @@ function preparePermissions(result)
 	permissions = permissions.map(element => element.trim());
 	
 	// Return it as output to put into the file
-	return PermissionsEnum.convertFromIndexArray(permissions);
+	return permissionsEnum.convertFromIndexArray(permissions);
 }
 
 function capitalizeFirstLetter(str)
