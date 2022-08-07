@@ -3,7 +3,7 @@ require('dotenv').config();
 
 // Custom variables
 const { Permissions, Text } = require("@beanc16/discordjs-helpers");
-const ServerPrefixesManagerV2 =  require("./src/managers/serverPrefixesManagerV2");
+const ServerPrefixesManager =  require("./src/managers/serverPrefixesManager");
 const CommandAbbreviationsSingleton =  require("./singletons/CommandAbbreviationsSingleton");
 const { allowCommandsInDms } = require("./src/botSettings.json");
 
@@ -57,7 +57,7 @@ bot.on('message', function (message)
 	}
 
 	// Try to initialize the guild's prefix if it doesn't exist
-	ServerPrefixesManagerV2.getPrefix(message)
+	ServerPrefixesManager.getPrefix(message)
 	.then(async function (prefix)
 	{
 		prefix = _getPrefixForDevEnvironment(prefix);

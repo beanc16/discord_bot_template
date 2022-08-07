@@ -2,7 +2,7 @@ const { DiscordBotSettingsMicroservice } = require("@beanc16/microservices-abstr
 const {
     appId,
     defaultPrefix,
-} = require("../../src/botSettings.json");
+} = require("../botSettings.json");
 const serverPrefixesCache = {};
 
 
