@@ -2,10 +2,9 @@
 require('dotenv').config();
 
 // Custom variables
-const { Text } = require("@beanc16/discordjs-helpers");
+const { Permissions, Text } = require("@beanc16/discordjs-helpers");
 const ServerPrefixesManagerV2 =  require("./src/managers/serverPrefixesManagerV2");
 const CommandAbbreviationsSingleton =  require("./singletons/CommandAbbreviationsSingleton");
-const PermissionsHelpers = require("./helpers/PermissionsHelpers");
 const { allowCommandsInDms } = require("./src/botSettings.json");
 
 // Libraries
@@ -141,8 +140,7 @@ async function runCommands(userCommand, user, userId, channelId, message, args, 
 		const command = require("./commands/" + commandName);
 		
 		// Check if user has permission to run the command
-		const permValidation = PermissionsHelpers
-								.msgSenderHasAllPerms(command, message);
+		const permValidation = Permissions.getMsgSenderPerms(command, message);
 		
 		if (permValidation.hasAllPerms)
 		{
