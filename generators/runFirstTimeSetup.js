@@ -9,18 +9,13 @@
 const prompt = require("prompt");	// For reading command line input
 const path = require("path");
 const FileManager = require("../custom_modules/fileManagement");
+const { DiscordBotSettingsMicroservice } = require("@beanc16/microservices-abstraction");
 
 // Telemetry
 const { logger } = require("@beanc16/logger");
 
 // Custom Variable
-const customizationFolderPath = path.join(__dirname,
-										"../commands/customization/");
-const defaultPrefix = "bot.";
-const defaultInvLink = "__PLEASE ADD INVITE LINK.__";
-const defaultDonationLink = "__PLEASE ADD DONATION LINK.__";
-const defaultCreationPurpose = "__PLEASE ADD CREATION PURPOSE.__";
-const defaultHomeServerInvite = "__PLEASE ADD HOME INVITE LINK.__";
+const customizationFolderPath = path.join(__dirname, "../commands/customization/");
 
 
 
@@ -32,73 +27,105 @@ const schema = {
 	properties: {
 		// AboutInfo botName
 		botName: {
-			message: "Enter the bot's name (this will be displayed " +
-					 "when a user runs the about command).\n\n" +
-					 
-					 "Bot Name",
+			description: `Enter the bot's name.
+				        (Displayed when a user runs the about command.)
+				
+				Bot Name*`
+				.split("\t").join(""),       					// Remove tabs.
+			message: "Bot Name is required.",
 			required: true
 		},
 		
 		// AboutInfo author
 		author: {
-			message: "Enter the bot's author (this will be " +
-					 "displayed when a user runs the about " +
-					 "command).\n\n" +
-					 
-					 "Author/Team Name",
+			description: `Enter the name of the bot's author.
+				        (Displayed when a user runs the about command.)
+				
+				Author/Team Name*`
+				.split("\t").join(""),       					// Remove tabs.
+			message: "Author/Team Name is required.",
 			required: true
 		},
 
 		// DefaultPrefix prefix
 		defaultPrefix: {
-			message: "Enter the bot's default prefix (if nothing is " +
-					 "entered, the default prefix will be $).\n\n" +
-
-					 "Default Prefix"
+			description: `Enter the bot's default prefix.
+				
+				Default Prefix`
+				.split("\t").join(""),       					// Remove tabs.
+			default: "bot.",
+			required: false,
 		},
 		
 		// AboutInfo creationPurpose
 		creationPurpose: {
-			message: "Enter the reason why the bot is being made " +
-					 "(this will be displayed when a user runs the " +
-					 "about command). (You may leave this blank for " +
-					 "now if you'd prefer to write it later.)\n\n" +
-					 
-					 "Creation Purpose"
+			description: `Enter the reason why the bot is being made.
+				        (Displayed when a user runs the about command.)
+				
+				Creation Purpose`
+				.split("\t").join(""),       					// Remove tabs.
+			required: false,
 		},
 		
 		// AboutInfo homeServerInvite
 		homeServerInvite: {
-			message: "Enter the a link to the bot's home server " +
-				"(this will be displayed when a user runs the " +
-				"about command). (You may leave this blank for " +
-				"now if you'd prefer to write it later.)\n\n" +
-
-				"Home Server Invite"
+			description: `Enter the a link to the bot's home server.
+				        (Displayed when a user runs the about command.)
+				
+				Home Server Invite`
+				.split("\t").join(""),       					// Remove tabs.
+			required: false,
 		},
 
 		// InviteInfo inviteLink
 		inviteLink: {
-			message: "Enter the a link for users to invite the bot " +
-					 "to their server (this will be displayed when " +
-					 "a user runs the invite command). (You may " +
-					 "leave this blank for now if you'd prefer to " +
-					 "write it later.)\n\n" +
-
-					 "Invite Link"
+			description: `Enter the a link for users to invite the bot to their server.
+				        (Displayed when a user runs the invite command.)
+				
+				Invite Link`
+				.split("\t").join(""),       					// Remove tabs.
+			required: false,
 		},
 
 		// DonationInfo donationLink
 		donationLink: {
-			message: "Enter the a link for user's to donate money " +
-					 "to you (this will be displayed when a user " +
-					 "runs the donate command). (You may leave this " +
-					 "blank for now if you'd prefer to write it " +
-					 "later.)\n\n" +
-
-					 "Donation Link"
-		}
+			description: `Enter a link for user's to donate money to you.
+				        (Displayed when a user runs the donate command.)
+				
+				Donation Link`
+				.split("\t").join(""),      					// Remove tabs.
+			required: false,
+		},
 		
+		// Allows allowCommandsInDms
+		allowCommandsInDms: {
+			description: `Enter whether users should be allowed to run commands in the bot's DMs (true/false).
+				
+				Allow Commands in DMs*`
+				.split("\t").join(""),      					// Remove tabs.
+			message: "Allow Commands in DMs must be a boolean.",
+			pattern: /^(true|false)$/i,
+			default: "true",
+			required: true,
+			before: (value) => (value.toLowerCase() === "true" || value.toLowerCase() === "false")
+								? JSON.parse(value.toLowerCase())
+								: value,						// Parse to boolean.
+		},
+		
+		// Allows allowCommandsInServers
+		allowCommandsInServers: {
+			description: `Enter whether users should be allowed to run commands in servers (true/false).
+				
+				Allow Commands in Servers*`
+				.split("\t").join(""),      					// Remove tabs.
+			message: "Allow Commands in DMs must be a boolean.",
+			pattern: /^(true|false)$/i,
+			default: "true",
+			required: true,
+			before: (value) => (value.toLowerCase() === "true" || value.toLowerCase() === "false")
+								? JSON.parse(value.toLowerCase())
+								: value,						// Parse to boolean.
+		},
 	}
 };
 
@@ -113,9 +140,25 @@ prompt.get(schema, function (err, result)
 		return 1;
 	}
 
-	// Set default values for non-required fields
-	result = prepareResult(result);
+	const { app, data } = _parseResultToBotCreationPayload(result);
 
+	// TODO: Update name and description in package.json.
+
+	logger.debug("Creating bot...", { app, data });
+	DiscordBotSettingsMicroservice.v1.create({
+		app,
+		data,
+	})
+	.then(function (response)
+	{
+		logger.info(response.data);
+	})
+	.catch(function (err)
+	{
+		logger.error("Error creating bot", err);
+	});
+
+	/*
 	//
 	const jsonTextToWrite = {
 		"aboutInfo": getJsonText(
@@ -141,43 +184,39 @@ prompt.get(schema, function (err, result)
 		FileManager.writeFile(customizationFolderPath + key + ".json",
 			jsonTextToWrite[key]);
 	}
+	*/
 });
 
 
 
 
 
-function prepareResult(result)
+function _parseResultToBotCreationPayload(result)
 {
-	// Prefix
-	if (result.defaultPrefix.length == 0)
-	{
-		result.defaultPrefix = defaultPrefix;
-	}
+	const app = {
+		displayName: result.botName,
+		searchName: result.botName.toLowerCase().split(" ").join("-"),
+		envs: [
+			"dev",
+			"prod",
+		],
+	};
 
-	// Invite
-	if (result.inviteLink.length == 0)
-	{
-		result.inviteLink = defaultInvLink;
-	}
+	const data = {
+		defaultPrefix: result.defaultPrefix,
+		allowCommandsInDms: result.allowCommandsInDms,
+		allowCommandsInServers: result.allowCommandsInServers,
+	};
 
-	// Donation
-	if (result.donationLink.length == 0)
-	{
-		result.donationLink = defaultDonationLink;
-	}
+	if (result.creationPurpose.length > 0) data.creationPurpose = result.creationPurpose;
+	if (result.inviteLink.length > 0) data.inviteLink = result.inviteLink;
+	if (result.homeServerInvite.length > 0) data.homeServerInvite = result.homeServerInvite;
+	if (result.donationLink.length > 0) data.donationLink = result.donationLink;
 
-	// About
-	if (result.creationPurpose.length == 0)
-	{
-		result.creationPurpose = defaultCreationPurpose;
-	}
-	if (result.homeServerInvite.length == 0)
-	{
-		result.homeServerInvite = defaultHomeServerInvite;
-	}
-
-	return result;
+	return {
+		app,
+		data,
+	};
 }
 
 function getJsonText(keysArray, valuesArray)
