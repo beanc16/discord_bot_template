@@ -59,14 +59,9 @@ bot.on('message', function (message)
 
 	// Try to initialize the guild's prefix if it doesn't exist
 	ServerPrefixesManagerV2.getPrefix(message)
-	.then(function (prefix)
+	.then(async function (prefix)
 	{
-		// Add "d" before the period for the development version of this bot
-		if (process.env.STAGE === "dev")
-		{
-			const index = prefix.indexOf(".");
-			prefix = `${prefix.substr(0, index)}d.`;
-		}
+		prefix = _getPrefixForDevEnvironment(prefix);
 		
 		if (prefix && (message.content.startsWith(prefix) || botWasPinged(message))
 			&& !message.author.bot)
@@ -81,8 +76,7 @@ bot.on('message', function (message)
 			args.shift();
 
 			// Run the command
-			runCommands(command, message.author, message.author.id, 
-						message.channel.id, message, args, prefix);
+			await runCommands(command, message.author, message.author.id, message.channel.id, message, args, prefix);
 		}
 	})
 	.catch(function (err)
@@ -136,8 +130,7 @@ function getArgs(message, prefix)
 						  .split(/[ \n]+/g);
 }
 
-function runCommands(userCommand, user, userId, channelId, message, 
-					 args, prefix)
+async function runCommands(userCommand, user, userId, channelId, message, args, prefix)
 {
     // Get the command that should be ran
     const commandName = getCommandToRun(userCommand);
@@ -153,8 +146,7 @@ function runCommands(userCommand, user, userId, channelId, message,
 		
 		if (permValidation.hasAllPerms)
 		{
-			command.run(bot, user, userId, channelId, message, args, 
-						prefix);
+			await command.run(bot, user, userId, channelId, message, args, prefix);
 		}
 		else
 		{
@@ -206,4 +198,26 @@ function missingPermsMessage(message, missingPermsArray)
     message.channel.send("You cannot use that command because " + 
 						 "you're missing the following " + 
 						 "permissions:\n" + missingPermsStr);
+}
+
+function _getPrefixForDevEnvironment(prefix)
+{
+	// Add "d" to the end of the prefix
+	if (process.env.STAGE === "dev")
+	{
+		const lastCharacterOfPrefix = prefix.slice(-1);
+		const index = lastCharacterOfPrefix.search(/[\W_]$/);
+
+		// The last character of the prefix IS a non-word character
+		if (index !== -1)
+		{
+			const allOfPrefixExceptForLastCharacter = prefix.slice(0, -1);
+			return `${allOfPrefixExceptForLastCharacter}d${lastCharacterOfPrefix}`;	// Example: `bot.` => `botd.`
+		}
+
+		// The last character of the prefix IS NOT a non-word character
+		return `${prefix}d`;														// Example: `bot` => `botd`
+	}
+
+	return prefix;
 }
