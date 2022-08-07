@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 // Custom variables
-const TextHelpers = require('./helpers/textHelpers');
+const { Text } = require("@beanc16/discordjs-helpers");
 const ServerPrefixesManagerV2 =  require("./src/managers/serverPrefixesManagerV2");
 const CommandAbbreviationsSingleton =  require("./singletons/CommandAbbreviationsSingleton");
 const PermissionsHelpers = require("./helpers/PermissionsHelpers");
@@ -124,7 +124,7 @@ function getArgs(message, prefix)
 	}
 	
 	// Bot was pinged, remove the ping and all spacing
-	const userPing = TextHelpers.getUserPing(message.author.id);
+	const userPing = Text.Ping.user(message.author.id);
 	return message.content.slice(userPing.length + 1)
 						  .trim()
 						  .split(/[ \n]+/g);
