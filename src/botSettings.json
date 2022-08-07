@@ -3,7 +3,7 @@
 	"defaultPrefix": "bot.",
     "allowCommandsInDms": false,
 	"creationPurpose": "__PLEASE ADD CREATION PURPOSE.__",
+	"inviteLink": "__PLEASE ADD INVITE LINK.__",
 	"homeServerInvite": "__PLEASE ADD HOME INVITE LINK.__",
-	"donationLink": "__PLEASE ADD DONATION LINK.__",
-	"inviteLink": "__PLEASE ADD INVITE LINK.__"
+	"donationLink": "__PLEASE ADD DONATION LINK.__"
 }
