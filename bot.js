@@ -46,7 +46,7 @@ bot.on('ready', function (evt)
 
 bot.on('message', function (message)
 {
-	// Only respond to messages that aren't in DMs
+	// Only respond to messages that aren't in DMs.
 	if (
 		allowCommandsInDms !== true &&
 		message.channel.type === "dm" && !message.author.bot
@@ -56,33 +56,36 @@ bot.on('message', function (message)
 		return;
 	}
 
-	// Try to initialize the guild's prefix if it doesn't exist
-	ServerPrefixesManager.getPrefix(message)
-	.then(async function (prefix)
+	// Only respond to messages that aren't from bots.
+	if (!message.author.bot)
 	{
-		prefix = _getPrefixForDevEnvironment(prefix);
-		
-		if (prefix && (message.content.startsWith(prefix) || botWasPinged(message))
-			&& !message.author.bot)
+		// Try to initialize the guild's prefix if it doesn't exist.
+		ServerPrefixesManager.getPrefix(message)
+		.then(async function (prefix)
 		{
-			// Get the message as an array, excluding the ping or prefix
-			let args = getArgs(message, prefix);
+			prefix = _getPrefixForDevEnvironment(prefix);
+			
+			if (prefix && (message.content.startsWith(prefix) || botWasPinged(message)))
+			{
+				// Get the message as an array, excluding the ping or prefix.
+				let args = getArgs(message, prefix);
 
-			// Set the command that was used
-			const command = args[0].toLowerCase();
+				// Set the command that was used.
+				const command = args[0].toLowerCase();
 
-			// Remove the command from the arguments
-			args.shift();
+				// Remove the command from the arguments.
+				args.shift();
 
-			// Run the command
-			await runCommands(command, message.author, message.author.id, message.channel.id, message, args, prefix);
-		}
-	})
-	.catch(function (err)
-	{
-		// TODO: Handle err
-		logger.error(err);
-	});
+				// Run the command.
+				await runCommands(command, message.author, message.author.id, message.channel.id, message, args, prefix);
+			}
+		})
+		.catch(function (err)
+		{
+			// TODO: Handle err
+			logger.error(err);
+		});
+	}
 });
 
 
