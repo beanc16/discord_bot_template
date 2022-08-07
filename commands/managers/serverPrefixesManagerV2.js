@@ -11,9 +11,7 @@ async function getPrefix(message)
 {
     return new Promise(function (resolve, reject)
     {
-        const serverId = (message.channel.type === "dm")
-            ? message.channel.id    // Use channel ID for DMs
-            : message.guild.id;     // Use server ID for non-DMs
+        const serverId = _getServerId(message);
         _tryResolvePrefixFromCache(resolve, serverId);
     
         // The prefix is not cached, so go get it.
@@ -41,11 +39,40 @@ async function getPrefix(message)
     });
 }
 
+async function setPrefix(message, newPrefix)
+{
+    return new Promise(function (resolve, reject)
+    {
+        const serverId = _getServerId(message);
+        
+        DiscordBotSettingsMicroservice.v1.upsertBotPrefix({
+            appId,
+            serverId,
+            serverPrefix: newPrefix,
+        })
+        .then(function (response)
+        {
+            _resolvePrefix(resolve, serverId, newPrefix);
+        })
+        .catch(function (err)
+        {
+            reject(err);
+        });
+    });
+}
+
 
 
 /*
  * Helpers
  */
+
+function _getServerId(message)
+{
+    return (message.channel.type === "dm")
+        ? message.channel.id    // Use channel ID for DMs
+        : message.guild.id;     // Use server ID for non-DMs
+}
 
 function _tryResolvePrefixFromCache(resolve, serverId)
 {
@@ -104,4 +131,5 @@ function _handle404(resolve, reject, err, serverId)
 
 module.exports = {
     getPrefix,
+    setPrefix,
 };
