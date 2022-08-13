@@ -1,5 +1,5 @@
 {
-	"name": "template_bot",
+	"name": "template-bot",
 	"version": "1.0.0",
 	"description": "A discord bot template for developers to clone so that they can start programming on top of a bot with basic functionality.",
 	"main": "bot.js",
