@@ -1,5 +1,5 @@
 const { DiscordBotSettingsMicroservice } = require("@beanc16/microservices-abstraction");
-const { defaultPrefix } = require("../botSettings.json");
+const MetaInfoManager = require("./MetaInfoManager");
 const serverPrefixesCache = {};
 
 
@@ -102,19 +102,27 @@ function _handle404(resolve, reject, err, serverId)
     // App & Bot DO exist, but the current server DOES NOT.
     else if (data.message && data.message.toLowerCase().includes("does not contain a server"))
     {
-        DiscordBotSettingsMicroservice.v1.upsertBotPrefix({
-            appId: process.env.APP_ID,
-            serverId,
-            serverPrefix: defaultPrefix,
-        })
-        .then(function (response)
+        MetaInfoManager.get()
+        .then(function (info)
         {
-            _resolvePrefix(resolve, serverId, defaultPrefix);
+            DiscordBotSettingsMicroservice.v1.upsertBotPrefix({
+                appId: process.env.APP_ID,
+                serverId,
+                serverPrefix: info.defaultPrefix,
+            })
+            .then(function (response)
+            {
+                _resolvePrefix(resolve, serverId, info.defaultPrefix);
+            })
+            .catch(function (err3)
+            {
+                reject(err3);
+            })
         })
         .catch(function (err2)
         {
             reject(err2);
-        })
+        });
     }
 
     // Unknown error occurred.

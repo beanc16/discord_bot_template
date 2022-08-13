@@ -5,7 +5,7 @@ require('dotenv').config();
 const { Permissions, Text } = require("@beanc16/discordjs-helpers");
 const ServerPrefixesManager =  require("./src/managers/serverPrefixesManager");
 const CommandAbbreviationsSingleton =  require("./singletons/CommandAbbreviationsSingleton");
-const { allowCommandsInDms } = require("./src/botSettings.json");
+const MetaInfoManager = require("./src/managers/MetaInfoManager");
 
 // Libraries
 const Discord = require('discord.js');
@@ -44,11 +44,13 @@ bot.on('ready', function (evt)
  * On Message
  */
 
-bot.on('message', function (message)
+bot.on('message', async function (message)
 {
+	const info = await MetaInfoManager.get();
+
 	// Only respond to messages that aren't in DMs.
 	if (
-		allowCommandsInDms !== true &&
+		info.allowCommandsInDms !== true &&
 		message.channel.type === "dm" && !message.author.bot
 	)
 	{
