@@ -5,8 +5,8 @@ class CommandNode
         data,
     } = {})
     {
-        this.abbreviations = abbreviations;     // To store other TrieNodes
-        this.data = data;                       // To store data about a word
+        this.abbreviations = abbreviations;
+        this.data = data;
     }
 }
 
