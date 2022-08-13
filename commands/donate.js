@@ -1,7 +1,7 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
 const { permissionsEnum } = require("@beanc16/discordjs-helpers");
-const DonationInfo = require('./customization/donationInfo');
+const MetaInfoManager = require("../src/managers/MetaInfoManager");
 
 
 
@@ -14,13 +14,23 @@ class Donate extends Command
 	
 	run(bot, user, userId, channelId, message, args, prefix)
     {
-		// Initialize the message to display
-        const donationMessage = "You can support my creator by " + 
-								"donating here:\n" +
-							    DonationInfo.donationLink;
+		MetaInfoManager.get()
+		.then(function (info)
+		{
+			if (info.donationLink)
+			{
+				const donationMessage = `You can support my creator by donating here:
+					${info.donationLink}
+					`.split("\t").join("");	// Remove tabs.
+		
+				message.channel.send(donationMessage);
+			}
 
-        // Send a message to the channel
-        message.channel.send(donationMessage);
+			else
+			{
+				message.channel.send("My creator has not set up a donation link");
+			}
+		});
     }
 	
 	getCommandAbbreviations()
