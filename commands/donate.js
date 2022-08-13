@@ -22,7 +22,7 @@ class Donate extends Command
 				const donationMessage = `You can support my creator by donating here:
 					${info.donationLink}
 					`.split("\t").join("");	// Remove tabs.
-		
+
 				message.channel.send(donationMessage);
 			}
 

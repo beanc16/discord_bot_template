@@ -1,7 +1,7 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
 const { permissionsEnum } = require("@beanc16/discordjs-helpers");
-const InviteInfo = require('./customization/inviteInfo');
+const MetaInfoManager = require("../src/managers/MetaInfoManager");
 
 
 
@@ -14,12 +14,23 @@ class Invite extends Command
 	
 	run(bot, user, userId, channelId, message, args, prefix)
     {
-		// Initialize the message to display
-        const inviteMessage = "You can invite me to your server " + 
-							  "here:\n" + InviteInfo.inviteLink;
+		MetaInfoManager.get()
+		.then(function (info)
+		{
+			if (info.inviteLink)
+			{
+				const inviteMessage = `You can invite me to your server here:
+					${info.inviteLink}
+					`.split("\t").join("");	// Remove tabs.
+	
+				message.channel.send(inviteMessage);
+			}
 
-        // Send a message to the channel
-        message.channel.send(inviteMessage);
+			else
+			{
+				message.channel.send("My creator has not set up an invite link");
+			}
+		});
     }
 	
 	getCommandAbbreviations()
