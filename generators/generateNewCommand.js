@@ -114,13 +114,11 @@ prompt.get(schema, function (err, result)
 	// Convert the permissions to the enum form
 	result.permissions = preparePermissions(result);
 	
-	let commandTemplate = FileManager
-								.readFileSync(commandTemplateFilePath);
+	let commandTemplate = FileManager.readFileSync(commandTemplateFilePath);
 	commandTemplate = updateCommandTemplate(commandTemplate, result);
 	
 	// Save to file
-	FileManager.writeFile(commandFolderPath + result.name + ".js", 
-						  commandTemplate);
+	FileManager.writeFile(commandFolderPath + result.name + ".js", commandTemplate);
 });
 
 
