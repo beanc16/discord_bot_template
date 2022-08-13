@@ -17,7 +17,10 @@ class MetaInfoManager
             })
             .then(function (response)
             {
-                _resolveMetaInfo(resolve, response.data.data.data);
+                _resolveMetaInfo(resolve, {
+                    botName: response.data.data.app.displayName,
+                    ...response.data.data.data,
+                });
             })
             .catch(function (err)
             {

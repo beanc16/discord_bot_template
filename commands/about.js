@@ -1,24 +1,8 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
 const { permissionsEnum, Text } = require("@beanc16/discordjs-helpers");
-const AboutInfo = require('./customization/aboutInfo');
 const Package = require('../package');
-
-
-
-const aboutMessageText =
-`${Text.bold(AboutInfo.botName)}
-
-${Text.italic("Version:")}
-${Package.version}
-
-${Text.italic("Created By:")}
-${Package.author}
-
-${Text.italic("Description:")}
-Hi, my name is ${AboutInfo.botName}. ${_getCreationPurpose()}
-
-${_getHomeServerInvite()}`;
+const MetaInfoManager = require("../src/managers/MetaInfoManager");
 
 
 
@@ -31,7 +15,26 @@ class About extends Command
 	
 	run(bot, user, userId, channelId, message, args, prefix)
     {
-        message.channel.send(aboutMessageText);
+		MetaInfoManager.get()
+		.then(function (info)
+		{
+			const aboutMessageText =
+				`${Text.bold(info.botName)}
+
+				${Text.italic("Version:")}
+				${Package.version}
+
+				${Text.italic("Created By:")}
+				${Package.author}
+
+				${Text.italic("Description:")}
+				Hi, my name is ${info.botName}. ${info.creationPurpose || ""}
+
+				${_getHomeServerInvite(info)}
+				`.split("\t").join("");	// Remove tabs.
+
+			message.channel.send(aboutMessageText);
+		});
     }
 	
 	getCommandAbbreviations()
@@ -57,8 +60,7 @@ class About extends Command
 	
 	getHelpDescription()
 	{
-        return "Display information about me, " + AboutInfo.botName + 
-			   ", and my creator.";
+        return "Display information about me and my creator.";
 	}
 	
     getHelpExamples()
@@ -76,18 +78,13 @@ module.exports = thisCommand.getAsJson();
 
 
 
-function _getCreationPurpose()
+function _getHomeServerInvite(info)
 {
-	return AboutInfo.creationPurpose || "";
-}
-
-function _getHomeServerInvite()
-{
-	return (AboutInfo.homeServerInvite)
+	return (info.homeServerInvite)
 
 		? `${Text.italic("Feedback and More Info:")}
 			To give feedback or to learn more about me and my creator, join my home discord server here:
-			${AboutInfo.homeServerInvite}`
+			${info.homeServerInvite}`
 			.split("\t").join("")	// Remove tabs.
 
 		: "";
