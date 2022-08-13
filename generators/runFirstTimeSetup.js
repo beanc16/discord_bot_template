@@ -7,15 +7,14 @@
 
 // Library
 const prompt = require("prompt");	// For reading command line input
-const path = require("path");
-const FileManager = require("../custom_modules/fileManagement");
+const fs = require("fs");
+const appRootPath = require("app-root-path");
+const packageJsonPath = appRootPath.resolve("package.json");
+const package = require(packageJsonPath);
 const { DiscordBotSettingsMicroservice } = require("@beanc16/microservices-abstraction");
 
 // Telemetry
 const { logger } = require("@beanc16/logger");
-
-// Custom Variable
-const customizationFolderPath = path.join(__dirname, "../commands/customization/");
 
 
 
@@ -25,7 +24,6 @@ prompt.start();
 // Create the schema for user input
 const schema = {
 	properties: {
-		// AboutInfo botName
 		botName: {
 			description: `Enter the bot's name.
 				        (Displayed when a user runs the about command.)
@@ -36,7 +34,6 @@ const schema = {
 			required: true
 		},
 		
-		// AboutInfo author
 		author: {
 			description: `Enter the name of the bot's author.
 				        (Displayed when a user runs the about command.)
@@ -46,8 +43,16 @@ const schema = {
 			message: "Author/Team Name is required.",
 			required: true
 		},
+		
+		description: {
+			description: `Enter the description for the bot's package.json.
+				
+				Package Description*`
+				.split("\t").join(""),       					// Remove tabs.
+			message: "Package Description is required.",
+			required: true
+		},
 
-		// DefaultPrefix prefix
 		defaultPrefix: {
 			description: `Enter the bot's default prefix.
 				
@@ -57,7 +62,6 @@ const schema = {
 			required: false,
 		},
 		
-		// AboutInfo creationPurpose
 		creationPurpose: {
 			description: `Enter the reason why the bot is being made.
 				        (Displayed when a user runs the about command.)
@@ -67,7 +71,6 @@ const schema = {
 			required: false,
 		},
 		
-		// AboutInfo homeServerInvite
 		homeServerInvite: {
 			description: `Enter the a link to the bot's home server.
 				        (Displayed when a user runs the about command.)
@@ -77,7 +80,6 @@ const schema = {
 			required: false,
 		},
 
-		// InviteInfo inviteLink
 		inviteLink: {
 			description: `Enter the a link for users to invite the bot to their server.
 				        (Displayed when a user runs the invite command.)
@@ -87,7 +89,6 @@ const schema = {
 			required: false,
 		},
 
-		// DonationInfo donationLink
 		donationLink: {
 			description: `Enter a link for user's to donate money to you.
 				        (Displayed when a user runs the donate command.)
@@ -97,7 +98,6 @@ const schema = {
 			required: false,
 		},
 		
-		// Allows allowCommandsInDms
 		allowCommandsInDms: {
 			description: `Enter whether users should be allowed to run commands in the bot's DMs (true/false).
 				
@@ -112,7 +112,6 @@ const schema = {
 								: value,						// Parse to boolean.
 		},
 		
-		// Allows allowCommandsInServers
 		allowCommandsInServers: {
 			description: `Enter whether users should be allowed to run commands in servers (true/false).
 				
@@ -142,9 +141,8 @@ prompt.get(schema, function (err, result)
 
 	const { app, data } = _parseResultToBotCreationPayload(result);
 
-	// TODO: Update name and description in package.json.
-
 	logger.debug("Creating bot...", { app, data });
+
 	DiscordBotSettingsMicroservice.v1.create({
 		app,
 		data,
@@ -152,39 +150,29 @@ prompt.get(schema, function (err, result)
 	.then(function (response)
 	{
 		logger.info(response.data);
+
+		// Update package.json.
+		package.name = app.searchName;
+		package.description = result.description;
+		package.author = result.author;
+
+		fs.writeFile(packageJsonPath, JSON.stringify(package, null, 4), function (err)
+		{
+			if (err)
+			{
+				logger.error("Error updating package.json on first time setup", err);
+			}
+
+			else
+			{
+				logger.info("Successfully updated package.json in first time setup");
+			}
+		});
 	})
 	.catch(function (err)
 	{
 		logger.error("Error creating bot", err);
 	});
-
-	/*
-	//
-	const jsonTextToWrite = {
-		"aboutInfo": getJsonText(
-			["botName", "author", "creationPurpose",
-						"homeServerInvite"],
-			[result.botName, result.author, result.creationPurpose,
-						result.homeServerInvite]
-		),
-		"defaultPrefix": getJsonText(
-			["prefix"], [result.defaultPrefix]
-		),
-		"donationInfo": getJsonText(
-			["donationLink"], [result.donationLink]
-		),
-		"inviteInfo": getJsonText(
-			["inviteLink"], [result.inviteLink]
-		)
-	};
-	
-	// Save to file
-	for (let key in jsonTextToWrite)
-	{
-		FileManager.writeFile(customizationFolderPath + key + ".json",
-			jsonTextToWrite[key]);
-	}
-	*/
 });
 
 
@@ -217,24 +205,4 @@ function _parseResultToBotCreationPayload(result)
 		app,
 		data,
 	};
-}
-
-function getJsonText(keysArray, valuesArray)
-{
-	let output = "{\n";
-
-	for (let i = 0; i < keysArray.length; i++)
-	{
-		if (valuesArray[i] != null)
-		{
-			output += '\t"' + keysArray[i] + '": "' + valuesArray[i] + '",\n';
-		}
-	}
-
-	// Remove last comma
-	output = output.replace(/,\s*$/, "");
-
-	output += "\n}";
-
-	return output;
 }
