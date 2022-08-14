@@ -1,22 +1,34 @@
-// Library & Custom Variable
-const Command = require("./miscellaneous/command");
+const BaseCommand = require("./miscellaneous/BaseCommand");
 const {
 	permissionsEnum,
 	ServerPrefixesController,
+	Text,
 } = require("@beanc16/discordjs-helpers");
 const { logger } = require("@beanc16/logger");
 
 
 
-class Prefix extends Command
+class Prefix extends BaseCommand
 {
-	constructor()
+    async run({
+        args,
+        attachments,
+        bot,
+        channel,
+        helpers: {
+            allBotCommandNames,
+            allBotCommandAbbreviations,
+            botHasAbbreviation,
+            botHasCommand,
+            botGetCommand,
+        },
+        prefix: currentPrefix,
+        message,
+        reactions,
+        server,
+        user,
+    })
 	{
-		super();
-	}
-	
-	run(bot, user, userId, channelId, message, args, currentPrefix, serverPrefixes)
-    {
 		const newPrefix = args.join(" ");
 
 		// A new prefix WAS set
@@ -25,57 +37,50 @@ class Prefix extends Command
 			ServerPrefixesController.setPrefix(message, newPrefix)
 			.then(function ()
 			{
-				message.channel.send(`The prefix has been changed from \`${currentPrefix}\` to \`${newPrefix}\``);
+				message.channel.send(`The prefix has been changed from ${Text.Code.oneLine(currentPrefix)} to ${Text.Code.oneLine(newPrefix)}`);
 			})
 			.catch(function (err)
 			{
 				logger.error("Failed to set prefix", err);
-				message.channel.send(`Failed to update prefix. It will stay as \`${currentPrefix}\``);
+				message.channel.send(`Failed to update prefix. It will stay as ${Text.Code.oneLine(currentPrefix)}`);
 			});
 		}
 
 		// A new prefix WAS NOT set
 		else
 		{
-			message.channel.send(`No new prefix was detected. The prefix will stay as \`${currentPrefix}\``);
+			message.channel.send(`No new prefix was detected. The prefix will stay as ${Text.Code.oneLine(currentPrefix)}`);
 		}
-}
-	
-	getCommandAbbreviations()
-	{
-		return super.getCommandAbbreviations("prefix", "pref");
 	}
-	
-	getRequiredPermissions()
+
+
+
+	get requiredPermissions()
 	{
-		return [permissionsEnum.MANAGE_GUILD];
+		return [
+			permissionsEnum.MANAGE_GUILD,
+		];
 	}
-	
-	
-	
-	/**********************
-	 * HELP DOCUMENTATION *
-	 **********************/
-	
-	getCommandName()
-	{
-		return super.getCommandName(__filename);
-	}
-	
-	getHelpDescription()
-	{
-        return "Changes the prefix that must be typed before a command.";
-	}
-	
-    getHelpExamples()
+
+
+
+    /*
+     * Help documentation
+     */
+
+    get description()
     {
-		return super.getHelpExamples("prefix !");
+        return "Changes the prefix that must be typed before a command.";
+    }
+
+    get examples()
+    {
+        return [
+            `${this.commandName} !`,
+        ];
     }
 }
 
 
 
-let thisCommand = new Prefix();
-
-// Export functions (for require statements in other files)
-module.exports = thisCommand.getAsJson();
+module.exports = new Prefix();
