@@ -6,21 +6,7 @@ const { MetaInfoController } = require("@beanc16/discordjs-helpers");
 class Invite extends BaseCommand
 {
     async run({
-        args,
-        attachments,
-        bot,
-        channel,
-        helpers: {
-            allBotCommandNames,
-            allBotCommandAbbreviations,
-            botHasCommand,
-            botGetCommand,
-        },
-        prefix,
         message,
-        reactions,
-        server,
-        user,
     })
 	{
 		MetaInfoController.get()

@@ -12,21 +12,8 @@ class Prefix extends BaseCommand
 {
     async run({
         args,
-        attachments,
-        bot,
-        channel,
-        helpers: {
-            allBotCommandNames,
-            allBotCommandAbbreviations,
-            botHasAbbreviation,
-            botHasCommand,
-            botGetCommand,
-        },
         prefix: currentPrefix,
         message,
-        reactions,
-        server,
-        user,
     })
     {
         const newPrefix = args.join(" ");

@@ -6,20 +6,7 @@ class Say extends BaseCommand
 {
     async run({
         args,
-        attachments,
-        bot,
-        channel,
-        helpers: {
-            allBotCommandNames,
-            allBotCommandAbbreviations,
-            botHasCommand,
-            botGetCommand,
-        },
-        prefix,
         message,
-        reactions,
-        server,
-        user,
     })
     {
         // The user DID include a message

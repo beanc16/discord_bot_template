@@ -10,21 +10,7 @@ const Package = require('../package');
 class About extends BaseCommand
 {
     async run({
-        args,
-        attachments,
-        bot,
-        channel,
-        helpers: {
-            allBotCommandNames,
-            allBotCommandAbbreviations,
-            botHasCommand,
-            botGetCommand,
-        },
-        prefix,
         message,
-        reactions,
-        server,
-        user,
     })
 	{
 		MetaInfoController.get()

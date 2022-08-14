@@ -7,21 +7,14 @@ class Help extends BaseCommand
 {
     async run({
         args,
-        attachments,
         bot,
-        channel,
         helpers: {
             allBotCommandNames,
-            allBotCommandAbbreviations,
 			botHasAbbreviation,
-            botHasCommand,
             botGetCommand,
         },
         prefix,
         message,
-        reactions,
-        server,
-        user,
     })
 	{
 		const commandName = args[0];
