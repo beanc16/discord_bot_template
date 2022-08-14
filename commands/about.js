@@ -1,5 +1,4 @@
-// Library & Custom Variables
-const Command = require("./miscellaneous/command");
+const BaseCommand = require("./miscellaneous/BaseCommand");
 const {
 	MetaInfoController,
 	permissionsEnum,
@@ -9,15 +8,26 @@ const Package = require('../package');
 
 
 
-class About extends Command
+class About extends BaseCommand
 {
-	constructor()
+    async run({
+        args,
+        attachments,
+        bot,
+        channel,
+        helpers: {
+            allBotCommandNames,
+            allBotCommandAbbreviations,
+            botHasCommand,
+            botGetCommand,
+        },
+        prefix,
+        message,
+        reactions,
+        server,
+        user,
+    })
 	{
-		super();
-	}
-	
-	run(bot, user, userId, channelId, message, args, prefix)
-    {
 		MetaInfoController.get()
 		.then(function (info)
 		{
@@ -38,57 +48,45 @@ class About extends Command
 
 			message.channel.send(aboutMessageText);
 		});
-    }
-	
-	getCommandAbbreviations()
-	{
-		return super.getCommandAbbreviations("about", "info");
 	}
-	
-	getRequiredPermissions()
-	{
-		return [];
-	}
-	
-	
-	
-	/**********************
-	 * HELP DOCUMENTATION *
-	 **********************/
-	
-	getCommandName()
-	{
-		return super.getCommandName(__filename);
-	}
-	
-	getHelpDescription()
-	{
-        return "Display information about me and my creator.";
-	}
-	
-    getHelpExamples()
+
+
+
+    get abbreviations()
     {
-		return super.getHelpExamples("about");
+        return [
+            `${this.commandName}`,
+			"info",
+        ];
+    }
+
+
+
+    /*
+     * Help documentation
+     */
+
+    get description()
+    {
+        return "Display information about me and my creator.";
     }
 }
 
 
 
-let thisCommand = new About();
-
-// Export functions (for require statements in other files)
-module.exports = thisCommand.getAsJson();
+module.exports = new About();
 
 
 
 function _getHomeServerInvite(info)
 {
-	return (info.homeServerInvite)
-
-		? `${Text.italic("Feedback and More Info:")}
+	if (info.homeServerInvite)
+	{
+		return `${Text.italic("Feedback and More Info:")}
 			To give feedback or to learn more about me and my creator, join my home discord server here:
 			${info.homeServerInvite}`
-			.split("\t").join("")	// Remove tabs.
+			.split("\t").join("");	// Remove tabs.
+	}
 
-		: "";
+	return "";
 }
