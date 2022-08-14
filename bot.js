@@ -49,7 +49,29 @@ bot.on('ready', function (evt)
 
 bot.on('message', async function (message)
 {
-	const info = await MetaInfoController.get();
+	let warningMessage;
+
+	// Timeout in case bot settings take awhile to load.
+	const slowToRespondTimeout = setTimeout(function ()
+	{
+		if (!message.author.bot)
+		{
+			message.channel.send("Loading bot settings. Should be done soon...")
+			.then((warningMsg) => warningMessage = warningMsg);
+		}
+	}, 3000);
+
+	const info = await MetaInfoController.get()
+	.finally(function ()
+	{
+		// Don't send message saying the bot's taking awhile to load.
+		clearTimeout(slowToRespondTimeout);
+
+		if (warningMessage)
+		{
+			warningMessage.delete();
+		}
+	});
 
 	// Only respond to messages that aren't in DMs.
 	if (
