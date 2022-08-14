@@ -49,43 +49,39 @@ bot.on('ready', function (evt)
 
 bot.on('message', async function (message)
 {
-	let warningMessage;
-
-	// Timeout in case bot settings take awhile to load.
-	const slowToRespondTimeout = setTimeout(function ()
+	if (!message.author.bot)
 	{
-		if (!message.author.bot)
+		let warningMessage;
+	
+		// Timeout in case bot settings take awhile to load.
+		const slowToRespondTimeout = setTimeout(function ()
 		{
 			message.channel.send("Loading bot settings. Should be done soon...")
 			.then((warningMsg) => warningMessage = warningMsg);
-		}
-	}, 3000);
-
-	const info = await MetaInfoController.get()
-	.finally(function ()
-	{
-		// Don't send message saying the bot's taking awhile to load.
-		clearTimeout(slowToRespondTimeout);
-
-		if (warningMessage)
+		}, 3000);
+	
+		const info = await MetaInfoController.get()
+		.finally(function ()
 		{
-			warningMessage.delete();
+			// Don't send message saying the bot's taking awhile to load.
+			clearTimeout(slowToRespondTimeout);
+	
+			if (warningMessage)
+			{
+				warningMessage.delete();
+			}
+		});
+	
+		// Only respond to messages that aren't in DMs.
+		if (
+			info.allowCommandsInDms !== true &&
+			message.channel.type === "dm" && !message.author.bot
+		)
+		{
+			message.channel.send("I'm a snobby bot and I refuse to run commands in DMs");
+			return;
 		}
-	});
 
-	// Only respond to messages that aren't in DMs.
-	if (
-		info.allowCommandsInDms !== true &&
-		message.channel.type === "dm" && !message.author.bot
-	)
-	{
-		message.channel.send("I'm a snobby bot and I refuse to run commands in DMs");
-		return;
-	}
-
-	// Only respond to messages that aren't from bots.
-	if (!message.author.bot)
-	{
 		// Try to initialize the guild's prefix if it doesn't exist.
 		ServerPrefixesController.getPrefix(message)
 		.then(async function (prefix)
