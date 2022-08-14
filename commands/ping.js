@@ -37,7 +37,7 @@ class Ping extends BaseCommand
 
     get description()
     {
-        return `Get the bot's response time in milliseconds.`;
+        return `Get my response time in milliseconds.`;
     }
 }
 
