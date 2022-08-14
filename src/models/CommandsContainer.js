@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const appRootPath = require("app-root-path");
 const CommandNode = require("./CommandNode");
+const CommonCommands = require("@beanc16/discordjs-common-commands");
 
 
 
@@ -37,6 +38,20 @@ class CommandsContainer
 
     static _initialize()
     {
+        // Initialize common commands
+        Object.entries(CommonCommands).forEach(([className, command]) =>
+        {
+            if (className.toLowerCase() !== "basecommand")
+            {
+                CommandsContainer.addCommand({
+                    commandName: command.commandName,
+                    command,
+                });
+            }
+        });
+
+        /*
+        // Initialize commands in the /src/commands folder
         const commandsDirPath = appRootPath.resolve("./src/commands");
 
         // Get all files and directories in the commands folder.
@@ -60,6 +75,7 @@ class CommandsContainer
                 })
             }
         });
+        */
     }
 
     static getCommand(commandName)
