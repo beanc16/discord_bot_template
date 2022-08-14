@@ -1,4 +1,4 @@
-// Library & Custom Variables
+const BaseCommand = require("./miscellaneous/BaseCommand");
 const Command = require("./miscellaneous/command");
 const {
 	MetaInfoController,
@@ -7,15 +7,26 @@ const {
 
 
 
-class Donate extends Command
+class Donate extends BaseCommand
 {
-	constructor()
+    async run({
+        args,
+        attachments,
+        bot,
+        channel,
+        helpers: {
+            allBotCommandNames,
+            allBotCommandAbbreviations,
+            botHasCommand,
+            botGetCommand,
+        },
+        prefix,
+        message,
+        reactions,
+        server,
+        user,
+    })
 	{
-		super();
-	}
-	
-	run(bot, user, userId, channelId, message, args, prefix)
-    {
 		MetaInfoController.get()
 		.then(function (info)
 		{
@@ -33,44 +44,30 @@ class Donate extends Command
 				message.channel.send("My creator has not set up a donation link");
 			}
 		});
-    }
-	
-	getCommandAbbreviations()
-	{
-		return super.getCommandAbbreviations("donate", "donation");
 	}
-	
-	getRequiredPermissions()
-	{
-		return [];
-	}
-	
-	
-	
-	/**********************
-	 * HELP DOCUMENTATION *
-	 **********************/
-	
-	getCommandName()
-	{
-		return super.getCommandName(__filename);
-	}
-	
-	getHelpDescription()
-	{
-        return "Display a link that lets you financially support my " +
-			   "creator.";
-	}
-	
-    getHelpExamples()
+
+
+
+    get abbreviations()
     {
-		return super.getHelpExamples("donate");
+        return [
+            `${this.commandName}`,
+			"donation",
+        ];
+    }
+
+
+
+    /*
+     * Help documentation
+     */
+
+    get description()
+    {
+        return "Display a link that lets you financially support my creator.";
     }
 }
 
 
 
-let thisCommand = new Donate();
-
-// Export functions (for require statements in other files)
-module.exports = thisCommand.getAsJson();
+module.exports = new Donate();
