@@ -1,60 +1,46 @@
 // Library & Custom Variable
-const Command = require("./miscellaneous/command");
+const BaseCommand = require("./miscellaneous/BaseCommand");
 const { permissionsEnum } = require("@beanc16/discordjs-helpers");
 
 
 
-class Ping extends Command
+class Ping extends BaseCommand
 {
-	constructor()
-	{
-		super();
-	}
-	
-	run(bot, user, userId, channelId, message, args, prefix)
+    async run({
+        args,
+        attachments,
+        bot,
+        channel,
+        helpers: {
+            allBotCommandNames,
+            allBotCommandAbbreviations,
+            botHasCommand,
+            botGetCommand,
+        },
+        prefix,
+        message,
+        reactions,
+        server,
+        user,
+    })
     {
-		const pongMsg = "🏓 Latency is " + 
-						(Date.now() - message.createdTimestamp) + 
-						"ms 🏓";
+        const latency = Date.now() - message.createdTimestamp;
+        const pongMsg = `🏓 Latency is ${latency}ms 🏓`;
         message.channel.send(pongMsg);
     }
-	
-	getCommandAbbreviations()
-	{
-		return super.getCommandAbbreviations("ping");
-	}
-	
-	getRequiredPermissions()
-	{
-		return [];
-	}
-	
-	
-	
-	/**********************
-	 * HELP DOCUMENTATION *
-	 **********************/
-	
-	getCommandName()
-	{
-		return super.getCommandName(__filename);
-	}
-	
-	getHelpDescription()
-	{
-        return 'Get a simple "Pong!" ' + "response to test the " + 
-			   "bot's response time.";
-	}
-	
-    getHelpExamples()
+
+
+
+    /*
+     * Help documentation
+     */
+
+    get description()
     {
-		return super.getHelpExamples("ping");
+        return `Get the bot's response time in milliseconds.`;
     }
 }
 
 
 
-let thisCommand = new Ping();
-
-// Export functions (for require statements in other files)
-module.exports = thisCommand.getAsJson();
+module.exports = new Ping();
