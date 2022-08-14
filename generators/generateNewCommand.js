@@ -8,7 +8,7 @@
 // Library
 const prompt = require("prompt");	// For reading command line input
 const path = require("path");
-const FileManager = require("../custom_modules/fileManagement");
+const fs = require("fs");
 const { permissionsEnum } = require("@beanc16/discordjs-helpers");
 
 // Telemetry
@@ -114,11 +114,11 @@ prompt.get(schema, function (err, result)
 	// Convert the permissions to the enum form
 	result.permissions = preparePermissions(result);
 	
-	let commandTemplate = FileManager.readFileSync(commandTemplateFilePath);
+	let commandTemplate = fs.readFileSync(commandTemplateFilePath, "utf8");
 	commandTemplate = updateCommandTemplate(commandTemplate, result);
 	
 	// Save to file
-	FileManager.writeFile(commandFolderPath + result.name + ".js", commandTemplate);
+	fs.writeFile(`${commandFolderPath}${result.name}.js`, commandTemplate);
 });
 
 
