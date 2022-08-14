@@ -1,7 +1,7 @@
 // Library & Custom Variable
 const Command = require("./miscellaneous/command");
 const { permissionsEnum } = require("@beanc16/discordjs-helpers");
-const ServerPrefixesManager = require("../src/managers/serverPrefixesManager");
+const ServerPrefixesController = require("../src/managers/ServerPrefixesController");
 const { logger } = require("@beanc16/logger");
 
 
@@ -20,7 +20,7 @@ class Prefix extends Command
 		// A new prefix WAS set
 		if (newPrefix !== "")
 		{
-			ServerPrefixesManager.setPrefix(message, newPrefix)
+			ServerPrefixesController.setPrefix(message, newPrefix)
 			.then(function ()
 			{
 				message.channel.send(`The prefix has been changed from \`${currentPrefix}\` to \`${newPrefix}\``);
