@@ -7,6 +7,7 @@ const { permissionsEnum } = require("@beanc16/discordjs-helpers");
 class Ping extends BaseCommand
 {
     async run({
+        // TODO: Remove unused parameters here and in other commands.
         args,
         attachments,
         bot,
