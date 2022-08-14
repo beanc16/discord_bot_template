@@ -1,5 +1,4 @@
-// Library & Custom Variables
-const Command = require("./miscellaneous/command");
+const BaseCommand = require("./miscellaneous/BaseCommand");
 const {
 	MetaInfoController,
 	permissionsEnum,
@@ -7,15 +6,26 @@ const {
 
 
 
-class Invite extends Command
+class Invite extends BaseCommand
 {
-	constructor()
+    async run({
+        args,
+        attachments,
+        bot,
+        channel,
+        helpers: {
+            allBotCommandNames,
+            allBotCommandAbbreviations,
+            botHasCommand,
+            botGetCommand,
+        },
+        prefix,
+        message,
+        reactions,
+        server,
+        user,
+    })
 	{
-		super();
-	}
-	
-	run(bot, user, userId, channelId, message, args, prefix)
-    {
 		MetaInfoController.get()
 		.then(function (info)
 		{
@@ -30,46 +40,23 @@ class Invite extends Command
 
 			else
 			{
-				message.channel.send("My creator has not set up an invite link");
+				message.channel.send("My creator has not set up an invite link.");
 			}
 		});
-    }
-	
-	getCommandAbbreviations()
-	{
-		return super.getCommandAbbreviations("invite", "inv");
 	}
-	
-	getRequiredPermissions()
-	{
-		return [];
-	}
-	
-	
-	
-	/**********************
-	 * HELP DOCUMENTATION *
-	 **********************/
-	
-	getCommandName()
-	{
-		return super.getCommandName(__filename);
-	}
-	
-	getHelpDescription()
-	{
-        return "Display a link that lets you invite me to a server.";
-	}
-	
-    getHelpExamples()
+
+
+
+    /*
+     * Help documentation
+     */
+
+    get description()
     {
-		return super.getHelpExamples("invite");
+        return "Get a link that lets you invite me to a server.";
     }
 }
 
 
 
-let thisCommand = new Invite();
-
-// Export functions (for require statements in other files)
-module.exports = thisCommand.getAsJson();
+module.exports = new Invite();
