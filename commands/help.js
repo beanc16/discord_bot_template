@@ -37,11 +37,10 @@ class Help extends BaseCommand
 			const command = botGetCommand(commandName);
 
 			helpMsg = _getHelpMessageForExistingCommand({
-				// TODO: Deprecate commandAbbreviations, helpDescription, & helpExamples when fully off of v1.
-				abbreviations: command.commandAbbreviations || command.abbreviations,
+				abbreviations: command.abbreviations,
 				commandName: command.commandName,
-				description: command.helpDescription || command.description,
-				examples: command.helpExamples || command.examples,
+				description: command.description,
+				examples: command.examples,
 				message,
 				prefix,
 			});

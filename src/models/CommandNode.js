@@ -7,8 +7,7 @@ class CommandNode
 
     get abbreviations()
     {
-        // TODO: Deprecate commandAbbreviations when fully off of v1.
-        return this.command.commandAbbreviations || this.command.abbreviations;
+        return this.command.abbreviations;
     }
 }
 
