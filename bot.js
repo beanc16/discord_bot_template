@@ -4,7 +4,7 @@ require('dotenv').config();
 // Custom variables
 const { Permissions, Text } = require("@beanc16/discordjs-helpers");
 const ServerPrefixesController =  require("./src/managers/ServerPrefixesController");
-const MetaInfoManager = require("./src/managers/MetaInfoManager");
+const MetaInfoController = require("./src/managers/MetaInfoController");
 
 // Libraries
 const Discord = require('discord.js');
@@ -46,7 +46,7 @@ bot.on('ready', function (evt)
 
 bot.on('message', async function (message)
 {
-	const info = await MetaInfoManager.get();
+	const info = await MetaInfoController.get();
 
 	// Only respond to messages that aren't in DMs.
 	if (

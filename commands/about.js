@@ -2,7 +2,7 @@
 const Command = require("./miscellaneous/command");
 const { permissionsEnum, Text } = require("@beanc16/discordjs-helpers");
 const Package = require('../package');
-const MetaInfoManager = require("../src/managers/MetaInfoManager");
+const MetaInfoController = require("../src/managers/MetaInfoController");
 
 
 
@@ -15,7 +15,7 @@ class About extends Command
 	
 	run(bot, user, userId, channelId, message, args, prefix)
     {
-		MetaInfoManager.get()
+		MetaInfoController.get()
 		.then(function (info)
 		{
 			const aboutMessageText =

@@ -1,7 +1,7 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
 const { permissionsEnum } = require("@beanc16/discordjs-helpers");
-const MetaInfoManager = require("../src/managers/MetaInfoManager");
+const MetaInfoController = require("../src/managers/MetaInfoController");
 
 
 
@@ -14,7 +14,7 @@ class Invite extends Command
 	
 	run(bot, user, userId, channelId, message, args, prefix)
     {
-		MetaInfoManager.get()
+		MetaInfoController.get()
 		.then(function (info)
 		{
 			if (info.inviteLink)

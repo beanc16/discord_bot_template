@@ -1,5 +1,5 @@
 const { DiscordBotSettingsMicroservice } = require("@beanc16/microservices-abstraction");
-const MetaInfoManager = require("./MetaInfoManager");
+const MetaInfoController = require("./MetaInfoController");
 const serverPrefixesCache = {};
 
 
@@ -102,7 +102,7 @@ function _handle404(resolve, reject, err, serverId)
     // App & Bot DO exist, but the current server DOES NOT.
     else if (data.message && data.message.toLowerCase().includes("does not contain a server"))
     {
-        MetaInfoManager.get()
+        MetaInfoController.get()
         .then(function (info)
         {
             DiscordBotSettingsMicroservice.v1.upsertBotPrefix({
