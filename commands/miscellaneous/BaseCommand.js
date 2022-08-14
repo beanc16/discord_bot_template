@@ -31,7 +31,7 @@ class BaseCommand
     get abbreviations()
     {
         return [
-            `${this.commandName}`
+            `${this.commandName}`,
         ];
     }
 
@@ -59,7 +59,7 @@ class BaseCommand
     get examples()
     {
         return [
-            `${this.commandName}`
+            `${this.commandName}`,
         ];
     }
 
