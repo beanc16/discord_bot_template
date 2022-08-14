@@ -37,7 +37,7 @@ class CommandsContainer
 
     static _initialize()
     {
-        const commandsDirPath = appRootPath.resolve("./commands");
+        const commandsDirPath = appRootPath.resolve("./src/commands");
 
         // Get all files and directories in the commands folder.
         const files = fs.readdirSync(commandsDirPath);

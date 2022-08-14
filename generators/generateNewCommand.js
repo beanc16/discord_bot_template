@@ -17,7 +17,7 @@ const { logger } = require("@beanc16/logger");
 // Custom Variable
 const commandTemplateFilePath = path.join(__dirname, 
 										  "./commandTemplate.txt");
-const commandFolderPath = path.join(__dirname, "../commands/");
+const commandFolderPath = path.join(__dirname, "../src/commands/");
 // TODO: Make the template use the new BaseCommand class.
 
 
