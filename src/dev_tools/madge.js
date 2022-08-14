@@ -8,5 +8,5 @@ madge("./bot.js").then((res) => {
     logger.debug("Warnings:\n", res.warnings());
     logger.debug("Circular Dependencies:\n", res.circular());
     logger.debug("Orphan Dependencies:\n", res.orphans());
-    logger.debug("Modles w/ No Dependencies:\n", res.leaves());
+    logger.debug("Models w/ No Dependencies:\n", res.leaves());
 });
