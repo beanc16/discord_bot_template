@@ -2,9 +2,12 @@
 require('dotenv').config();
 
 // Custom variables
-const { Permissions, Text } = require("@beanc16/discordjs-helpers");
-const ServerPrefixesController =  require("./src/managers/ServerPrefixesController");
-const MetaInfoController = require("./src/managers/MetaInfoController");
+const {
+	MetaInfoController,
+	Permissions,
+	ServerPrefixesController,
+	Text,
+} = require("@beanc16/discordjs-helpers");
 
 // Libraries
 const Discord = require('discord.js');

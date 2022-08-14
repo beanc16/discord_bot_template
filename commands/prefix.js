@@ -1,7 +1,9 @@
 // Library & Custom Variable
 const Command = require("./miscellaneous/command");
-const { permissionsEnum } = require("@beanc16/discordjs-helpers");
-const ServerPrefixesController = require("../src/managers/ServerPrefixesController");
+const {
+	permissionsEnum,
+	ServerPrefixesController,
+} = require("@beanc16/discordjs-helpers");
 const { logger } = require("@beanc16/logger");
 
 

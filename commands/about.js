@@ -1,8 +1,11 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
-const { permissionsEnum, Text } = require("@beanc16/discordjs-helpers");
+const {
+	MetaInfoController,
+	permissionsEnum,
+	Text,
+} = require("@beanc16/discordjs-helpers");
 const Package = require('../package');
-const MetaInfoController = require("../src/managers/MetaInfoController");
 
 
 
