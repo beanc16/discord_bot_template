@@ -1,12 +1,13 @@
 class CommandNode
 {
-    constructor({
-        abbreviations = [],
-        data,
-    } = {})
+    constructor(command)
     {
-        this.abbreviations = abbreviations;
-        this.data = data;
+        this.command = command;
+    }
+
+    get abbreviations()
+    {
+        return this.command.commandAbbreviations;
     }
 }
 

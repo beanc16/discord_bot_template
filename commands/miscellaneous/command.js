@@ -1,13 +1,17 @@
 // Library & Custom Variable
 const path = require("path");
-const CommandHelpers = require('../../helpers/commandHelpers');
 
 class Command
 {
 	constructor()
 	{}
 	
-	run(bot, user, userId, channelId, message, args, prefix)
+	run(bot, user, userId, channelId, message, args, prefix, {
+		botCommandNames,
+		botCommandAbbreviations,
+		botHasCommand,
+		botGetCommand,
+	})
 	{
 		throw new Error("Run for command has not been implemented!");
 	}
@@ -36,8 +40,9 @@ class Command
 	
 	getCommandName(fileName)
 	{
-		let fileNameWithExtension = path.basename(fileName);
-		return CommandHelpers.getCommandName(fileNameWithExtension);
+		const fileNameWithExtension = path.basename(fileName);
+		const extensionIndex = fileNameWithExtension.indexOf(".js");
+		return fileNameWithExtension.substring(0, extensionIndex);
 	}
 	
 	getHelpDescription(str)
@@ -64,10 +69,9 @@ class Command
 	getAsJson()
 	{
 		return {
-			run: (bot, user, userId, channelId, message, args, 
-				  prefix) => 
+			run: (bot, user, userId, channelId, message, args, prefix, options) => 
 						this.run(bot, user, userId, channelId, message,
-								 args, prefix),
+									args, prefix, options),
 
 			commandAbbreviations: this.getCommandAbbreviations(),
 			

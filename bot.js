@@ -4,7 +4,6 @@ require('dotenv').config();
 // Custom variables
 const { Permissions, Text } = require("@beanc16/discordjs-helpers");
 const ServerPrefixesManager =  require("./src/managers/serverPrefixesManager");
-const CommandAbbreviationsSingleton =  require("./singletons/CommandAbbreviationsSingleton");
 const MetaInfoManager = require("./src/managers/MetaInfoManager");
 
 // Libraries
@@ -16,6 +15,7 @@ bot.login(process.env.TOKEN);
 
 // Telemetry
 const { logger } = require("@beanc16/logger");
+const CommandsContainer = require('./src/models/CommandsContainer');
 
 
 
@@ -137,19 +137,23 @@ function getArgs(message, prefix)
 async function runCommands(userCommand, user, userId, channelId, message, args, prefix)
 {
     // Get the command that should be ran
-    const commandName = getCommandToRun(userCommand);
+    const command = getCommandToRun(userCommand);
 	
 	// The command DOES exist
-	if (commandName)
+	if (command)
 	{
-		const command = require("./commands/" + commandName);
-		
 		// Check if user has permission to run the command
 		const permValidation = Permissions.getMsgSenderPerms(command, message);
 		
 		if (permValidation.hasAllPerms)
 		{
-			await command.run(bot, user, userId, channelId, message, args, prefix);
+			await command.run(bot, user, userId, channelId, message, args, prefix, {
+				botCommandNames: CommandsContainer.commandNames,
+				botCommandAbbreviations: CommandsContainer.abbreviations,
+				botHasAbbreviation: CommandsContainer.hasAbbreviation,
+				botHasCommand: CommandsContainer.hasCommand,
+				botGetCommand: CommandsContainer.getCommand,
+			});
 		}
 		else
 		{
@@ -166,8 +170,7 @@ async function runCommands(userCommand, user, userId, channelId, message, args, 
 
 function getCommandToRun(userCommand)
 {
-    let trie = CommandAbbreviationsSingleton.instance;
-	return trie.getData(userCommand);
+	return CommandsContainer.getCommand(userCommand);
 }
 
 // Tell the user that the command wasn't found

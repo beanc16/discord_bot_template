@@ -1,7 +1,6 @@
 // Library & Custom Variables
 const Command = require("./miscellaneous/command");
 const { permissionsEnum, Text } = require("@beanc16/discordjs-helpers");
-const CommandNamesSingleton = require("../singletons/CommandNamesSingleton");
 
 
 
@@ -12,25 +11,28 @@ class Help extends Command
 		super();
 	}
 	
-	run(bot, user, userId, channelId, message, args, prefix)
+	run(bot, user, userId, channelId, message, args, prefix, {
+		botCommandNames,
+		botCommandAbbreviations,
+		botHasAbbreviation,
+		botHasCommand,
+		botGetCommand,
+	})
     {
         // There's no arguments
         if (args.length === 0)
         {
-            _sendBaseHelpMessage(bot, userId, channelId, prefix, 
-								message);
+            _sendBaseHelpMessage(bot, userId, channelId, prefix, message, botCommandNames);
         }
 
         // There are arguments
         else
         {
-			const command = args[0];
-			const trie = CommandNamesSingleton.instance;
-			if (trie.hasWord(command))
+			const commandName = args[0];
+			if (botHasAbbreviation(commandName))
 			{
-				let commandClass = require("./" + command);
-				_getCommandsHelpMessage(commandClass, bot, userId, 
-									   channelId, prefix, message);
+				const command = botGetCommand(commandName);
+				_getCommandsHelpMessage(command, bot, userId, channelId, prefix, message);
 				return;
 			}
 			
@@ -81,7 +83,7 @@ module.exports = thisCommand.getAsJson();
 
 
 // Send help message (when there's no arguments)
-function _sendBaseHelpMessage(bot, userID, channelID, prefix, message)
+function _sendBaseHelpMessage(bot, userID, channelID, prefix, message, botCommandNames)
 {
 	const botPing = Text.Ping.user(bot.user.id);
 
@@ -97,10 +99,8 @@ function _sendBaseHelpMessage(bot, userID, channelID, prefix, message)
 		${Text.bold("All Command")}
 		\`\`\`
 		`.split("\t").join("");	// Remove tabs.
-
-    // Add each command to the help message
-	const allCommands = CommandNamesSingleton.instance.getCommands();
-	allCommands.forEach(function (command)
+	
+	botCommandNames.forEach(function (command)
 	{
 		helpMessage += `${prefix}${command}\n`;
 	});

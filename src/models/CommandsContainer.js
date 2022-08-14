@@ -1,25 +1,25 @@
+const fs = require("fs");
+const path = require("path");
+const appRootPath = require("app-root-path");
 const CommandNode = require("./CommandNode");
 
 
 
 class CommandsContainer
 {
-    constructor()
+    static _commands = {};
+    static _abbreviations = [];
+
+    static get commandNames()
     {
-        this._commands = {};
-        this._abbreviations = [];
+        return Object.keys(CommandsContainer._commands);
     }
 
-    get commands()
+    static get abbreviations()
     {
-        return this._commands;
-    }
-
-    get abbreviations()
-    {
-        if (this._abbreviations.length === 0)
+        if (CommandsContainer._abbreviations.length === 0)
         {
-            this._abbreviations = Object.values(this._commands).reduce(function (acc, commandNode)
+            CommandsContainer._abbreviations = Object.values(CommandsContainer._commands).reduce(function (acc, commandNode)
             {
                 if (!!commandNode.abbreviations)
                 {
@@ -30,25 +30,64 @@ class CommandsContainer
             }, []);
         }
 
-        return this._abbreviations;
+        return CommandsContainer._abbreviations;
     }
 
 
 
-    getCommand(commandName)
+    static _initialize()
     {
-        if (!this._commands[commandName])
+        const commandsDirPath = appRootPath.resolve("./commands");
+
+        // Get all files and directories in the commands folder.
+        const files = fs.readdirSync(commandsDirPath);
+
+        // Initialize each command.
+        files.forEach((fileName) =>
         {
-            throw new Error(`Unknown command: ${commandName}`);
+            // Is a command file
+            if (path.extname(fileName).toLowerCase() === ".js")
+            {
+                const extensionIndex = fileName.indexOf(".js");
+                const commandName = fileName.substring(0, extensionIndex);
+
+                const commandPath = path.join(commandsDirPath, commandName);
+                const command = require(commandPath);
+
+                CommandsContainer.addCommand({
+                    commandName,
+                    command,
+                })
+            }
+        });
+    }
+
+    static getCommand(commandName)
+    {
+        if (!CommandsContainer._commands[commandName])
+        {
+            return CommandsContainer.getCommandFromAbbreviation(commandName);
         }
 
-        return this._commands[commandName];
+        return CommandsContainer._commands[commandName].command;
     }
 
-    addCommand({
+    static getCommandFromAbbreviation(commandName)
+    {
+        for (const commandNode of Object.values(CommandsContainer._commands))
+        {
+            if (commandNode.abbreviations.includes(commandName))
+            {
+                return commandNode.command;
+            }
+        };
+
+        throw new Error(`Unknown command: ${commandName}`);
+    }
+
+    static addCommand({
         commandName,
-        abbreviations,
-        data,
+        command,
     })
     {
         if (!commandName)
@@ -56,17 +95,21 @@ class CommandsContainer
             throw new Error(`Invalid commandName in addCommand: ${commandName}`);
         }
         
-        this._commands[commandName] = new CommandNode({
-            data,
-            abbreviations,
-        });
+        CommandsContainer._commands[commandName] = new CommandNode(command);
     }
 
-    hasCommand(commandName)
+    static hasCommand(commandName)
     {
-        return (!!this._commands[commandName]);
+        return (!!CommandsContainer._commands[commandName]);
+    }
+
+    static hasAbbreviation(commandName)
+    {
+        return CommandsContainer._abbreviations.includes(commandName);
     }
 }
+
+CommandsContainer._initialize();
 
 
 
