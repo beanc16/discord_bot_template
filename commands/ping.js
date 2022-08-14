@@ -1,5 +1,4 @@
 const BaseCommand = require("./miscellaneous/BaseCommand");
-// TODO: Convert all command files to indent with spaces instead of tabs.
 
 
 

@@ -21,20 +21,20 @@ class Say extends BaseCommand
         server,
         user,
     })
-	{
-		// The user DID include a message
-		if (args.length > 0)
-		{
-			const msg = args.join(" ");
-			message.channel.send(msg);
-		}
+    {
+        // The user DID include a message
+        if (args.length > 0)
+        {
+            const msg = args.join(" ");
+            message.channel.send(msg);
+        }
 
-		// The user DID NOT include a message
-		else
-		{
-			message.channel.send("No message to say detected.");
-		}
-	}
+        // The user DID NOT include a message
+        else
+        {
+            message.channel.send("No message to say detected.");
+        }
+    }
 
 
 
@@ -42,7 +42,7 @@ class Say extends BaseCommand
     {
         return [
             `${this.commandName}`,
-			"repeat",
+            "repeat",
         ];
     }
 
@@ -57,12 +57,12 @@ class Say extends BaseCommand
         return `Make me repeat what you say.`;
     }
 
-	get examples()
-	{
-		return [
-			`${this.commandName} Hi!`,
-		];
-	}
+    get examples()
+    {
+        return [
+            `${this.commandName} Hi!`,
+        ];
+    }
 }
 
 
