@@ -1,6 +1,7 @@
 // Library & Custom Variable
 const BaseCommand = require("./miscellaneous/BaseCommand");
 const { permissionsEnum } = require("@beanc16/discordjs-helpers");
+// TODO: ^ Remove permissionsEnum from all commands not using it.
 
 
 
