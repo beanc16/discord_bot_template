@@ -8,7 +8,7 @@ const CommandNode = require("./CommandNode");
 class CommandsContainer
 {
     static _commands = {};
-    static _abbreviations = [];
+    static _abbreviations = []; // TODO: Make this a Set.
 
     static get commandNames()
     {

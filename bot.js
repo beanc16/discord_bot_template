@@ -168,13 +168,41 @@ async function runCommands(userCommand, user, userId, channelId, message, args, 
 		
 		if (permValidation.hasAllPerms)
 		{
-			await command.run(bot, user, userId, channelId, message, args, prefix, {
-				botCommandNames: CommandsContainer.commandNames,
-				botCommandAbbreviations: CommandsContainer.abbreviations,
-				botHasAbbreviation: CommandsContainer.hasAbbreviation,
-				botHasCommand: CommandsContainer.hasCommand,
-				botGetCommand: CommandsContainer.getCommand,
-			});
+			// v2 command style
+			if (command.description)
+			{
+				await command.run({
+					args,
+					attachments: message.attachments,
+					bot,
+					channel: message.channel,
+					helpers: {
+						allBotCommandNames: CommandsContainer.commandNames,
+						allBotCommandAbbreviations: CommandsContainer.abbreviations,
+						botHasAbbreviation: CommandsContainer.hasAbbreviation,
+						botHasCommand: CommandsContainer.hasCommand,
+						botGetCommand: CommandsContainer.getCommand,
+					},
+					message,
+					prefix,
+					reactions: message.reactions,
+					server: message.guild,
+					user: message.author,
+				});
+			}
+
+			// TODO: Deprecate v1 once fully off of it.
+			// v1 command style
+			else
+			{
+				await command.run(bot, user, userId, channelId, message, args, prefix, {
+					botCommandNames: CommandsContainer.commandNames,
+					botCommandAbbreviations: CommandsContainer.abbreviations,
+					botHasAbbreviation: CommandsContainer.hasAbbreviation,
+					botHasCommand: CommandsContainer.hasCommand,
+					botGetCommand: CommandsContainer.getCommand,
+				});
+			}
 		}
 		else
 		{

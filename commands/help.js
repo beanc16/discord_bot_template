@@ -118,9 +118,10 @@ function _getCommandsHelpMessage(command, bot, userID, channelID, prefix, messag
 {
 	// Get command's info
 	let commandName = command.commandName;
-	let abbreviations = command.commandAbbreviations;
-	let description = command.helpDescription;
-	let examples = command.helpExamples;
+	// TODO: Deprecate commandAbbreviations, helpDescription, & helpExamples when fully off of v1.
+	let abbreviations = command.commandAbbreviations || command.abbreviations;
+	let description = command.helpDescription || command.description;
+	let examples = command.helpExamples || command.examples;
 
 	// Send message with info
 	_sendSpecificHelpMessage(bot, userID, channelID, prefix, 
