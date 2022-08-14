@@ -3,7 +3,7 @@ const {
 	MetaInfoController,
 	Text,
 } = require("@beanc16/discordjs-helpers");
-const Package = require('../package');
+const Package = require('../../package');
 
 
 
