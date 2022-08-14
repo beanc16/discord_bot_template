@@ -1,6 +1,4 @@
 const BaseCommand = require("./miscellaneous/BaseCommand");
-const { permissionsEnum } = require("@beanc16/discordjs-helpers");
-// TODO: ^ Remove permissionsEnum from all commands not using it.
 // TODO: Convert all command files to indent with spaces instead of tabs.
 
 

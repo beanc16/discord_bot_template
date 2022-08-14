@@ -1,5 +1,4 @@
 const BaseCommand = require("./miscellaneous/BaseCommand");
-const { permissionsEnum } = require("@beanc16/discordjs-helpers");
 
 
 

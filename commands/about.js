@@ -1,7 +1,6 @@
 const BaseCommand = require("./miscellaneous/BaseCommand");
 const {
 	MetaInfoController,
-	permissionsEnum,
 	Text,
 } = require("@beanc16/discordjs-helpers");
 const Package = require('../package');

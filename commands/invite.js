@@ -1,8 +1,5 @@
 const BaseCommand = require("./miscellaneous/BaseCommand");
-const {
-	MetaInfoController,
-	permissionsEnum,
-} = require("@beanc16/discordjs-helpers");
+const { MetaInfoController } = require("@beanc16/discordjs-helpers");
 
 
 
