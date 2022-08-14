@@ -1,88 +1,100 @@
-const Command = require("./miscellaneous/command");
+const BaseCommand = require("./miscellaneous/BaseCommand");
 const { permissionsEnum, Text } = require("@beanc16/discordjs-helpers");
 
 
 
-class Help extends Command
+class Help extends BaseCommand
 {
-	constructor()
+    async run({
+        args,
+        attachments,
+        bot,
+        channel,
+        helpers: {
+            allBotCommandNames,
+            allBotCommandAbbreviations,
+			botHasAbbreviation,
+            botHasCommand,
+            botGetCommand,
+        },
+        prefix,
+        message,
+        reactions,
+        server,
+        user,
+    })
 	{
-		super();
-	}
-	
-	run(bot, user, userId, channelId, message, args, prefix, {
-		botCommandNames,
-		botCommandAbbreviations,
-		botHasAbbreviation,
-		botHasCommand,
-		botGetCommand,
-	})
-    {
-        // There's no arguments
+		const commandName = args[0];
+		let helpMsg;
+
+        // There ARE NOT arguments.
         if (args.length === 0)
         {
-            _sendBaseHelpMessage(bot, userId, channelId, prefix, message, botCommandNames);
+            helpMsg = _getBaseHelpMessage({
+				bot,
+				prefix,
+				message,
+				allBotCommandNames,
+			});
         }
 
-        // There are arguments
-        else
+        // There ARE arguments AND the command DOES exist.
+        else if (botHasAbbreviation(commandName))
         {
-			const commandName = args[0];
-			if (botHasAbbreviation(commandName))
-			{
-				const command = botGetCommand(commandName);
-				_getCommandsHelpMessage(command, bot, userId, channelId, prefix, message);
-				return;
-			}
-			
-			// The command DOES NOT exist
-			message.channel.send(_getCommandDoesNotExistMessage(prefix));
+			const command = botGetCommand(commandName);
+
+			helpMsg = _getHelpMessageForExistingCommand({
+				// TODO: Deprecate commandAbbreviations, helpDescription, & helpExamples when fully off of v1.
+				abbreviations: command.commandAbbreviations || command.abbreviations,
+				commandName: command.commandName,
+				description: command.helpDescription || command.description,
+				examples: command.helpExamples || command.examples,
+				message,
+				prefix,
+			});
         }
-    }
-	
-	getCommandAbbreviations()
-	{
-		return super.getCommandAbbreviations("help", "h");
+
+        // There ARE arguments BUT the command DOES NOT exist.
+		else
+		{
+			helpMsg = _getHelpMessageForNonexistantCommand(prefix);
+		}
+
+		message.channel.send(helpMsg);
 	}
-	
-	getRequiredPermissions()
-	{
-		return [];
-	}
-	
-	
-	
-	/**********************
-	 * HELP DOCUMENTATION *
-	 **********************/
-	
-	getCommandName()
-	{
-		return super.getCommandName(__filename);
-	}
-	
-	getHelpDescription()
-	{
-        return "Display a list of available commands or detailed information about a specific command.";
-	}
-	
-    getHelpExamples()
+
+
+
+    /*
+     * Help documentation
+     */
+
+    get description()
     {
-		return super.getHelpExamples("help", "help ping", "help prefix");
+        return "Display a list of available commands or detailed information about a specific command.";
     }
+
+	get examples()
+	{
+		return [
+			`${this.commandName}`,
+			`${this.commandName} ping`,
+			`${this.commandName} prefix`,
+		];
+	}
 }
 
 
 
-let thisCommand = new Help();
-
-// Export functions (for require statements in other files)
-module.exports = thisCommand.getAsJson();
+module.exports = new Help();
 
 
 
-// Send help message (when there's no arguments)
-function _sendBaseHelpMessage(bot, userID, channelID, prefix, message, botCommandNames)
+function _getBaseHelpMessage({
+	bot,
+	prefix,
+	allBotCommandNames,
+})
 {
 	const botPing = Text.Ping.user(bot.user.id);
 
@@ -95,55 +107,27 @@ function _sendBaseHelpMessage(bot, userID, channelID, prefix, message, botComman
 		
 		Note, commands are NOT case sensitive. You can type them with any combination of uppercase and lowercase letters, as long as the command is still spelled correctly.
 		
-		${Text.bold("All Command")}
-		\`\`\`
+		${Text.bold("All Commands")}
 		`.split("\t").join("");	// Remove tabs.
-	
-	botCommandNames.forEach(function (command)
+
+	// Add list of command names to help message
+	helpMessage += allBotCommandNames.reduce(function (acc, commandName)
 	{
-		helpMessage += `${prefix}${command}\n`;
-	});
+		return acc += `${prefix}${commandName}\n`;
+	}, "```") + "```";
 
-    // Close the multi-line text
-    helpMessage += "```";
-
-    // Send a message to the channel
-    message.channel.send(helpMessage);
+    return helpMessage;
 }
 
-
-
-function _getCommandsHelpMessage(command, bot, userID, channelID, prefix, message)
+function _getHelpMessageForExistingCommand({
+	abbreviations,
+	commandName,
+	description,
+	examples,
+	prefix,
+})
 {
-	// Get command's info
-	let commandName = command.commandName;
-	// TODO: Deprecate commandAbbreviations, helpDescription, & helpExamples when fully off of v1.
-	let abbreviations = command.commandAbbreviations || command.abbreviations;
-	let description = command.helpDescription || command.description;
-	let examples = command.helpExamples || command.examples;
-
-	// Send message with info
-	_sendSpecificHelpMessage(bot, userID, channelID, prefix, 
-							commandName, abbreviations, description, 
-							examples, message);
-}
-
-function _sendSpecificHelpMessage(bot, userID, channelID, prefix, 
-								commandName, abbreviations,
-								description, examples, message)
-{
-	const abbreviationsStr = abbreviations.reduce(function (acc, cur)
-	{
-		acc += `${Text.Code.oneLine(`${prefix}${cur}`)}\n`;
-		return acc;
-	}, `\n${Text.italic("Abbreviations:")}\n`);
-
-	const examplesStr = examples.reduce(function (acc, cur)
-	{
-		acc += `${Text.Code.oneLine(`${prefix}${cur}`)}\n`;
-		return acc;
-	}, `\n${Text.italic("Examples")}:\n`);
-
+	// Base help message.
 	let helpMessage =
 		`${Text.bold(`${prefix}${commandName}`)}
 		
@@ -151,23 +135,30 @@ function _sendSpecificHelpMessage(bot, userID, channelID, prefix,
 		${description}
 		`.split("\t").join("");	// Remove tabs.
 	
+	// Add abbreviations.
 	if (abbreviations.length > 0)
 	{
-		helpMessage += abbreviationsStr;
+		helpMessage += abbreviations.reduce(function (acc, cur)
+		{
+			return acc += `${Text.Code.oneLine(`${prefix}${cur}`)}\n`;
+		}, `\n${Text.italic("Abbreviations:")}\n`);
 	}
 	
+	// Add examples.
 	if (examples.length > 0)
 	{
-		helpMessage += examplesStr;
+		helpMessage += examples.reduce(function (acc, cur)
+		{
+			return acc += `${Text.Code.oneLine(`${prefix}${cur}`)}\n`;
+		}, `\n${Text.italic("Examples")}:\n`);
 	}
 
-    // Send a message to the channel
-    message.channel.send(helpMessage);
+    return helpMessage;
 }
 
-function _getCommandDoesNotExistMessage(prefix)
+function _getHelpMessageForNonexistantCommand(prefix)
 {
 	return `No help information on that command is available.
-			Please check ${Text.Code.oneLine(`${prefix}help`)} to view all commands.`
-			.split("\t").join("");	// Remove tabs.
+		Please check ${Text.Code.oneLine(`${prefix}help`)} to view all commands.
+		`.split("\t").join("");	// Remove tabs.
 }
