@@ -1,5 +1,4 @@
 const BaseCommand = require("./miscellaneous/BaseCommand");
-const Command = require("./miscellaneous/command");
 const {
 	MetaInfoController,
 	permissionsEnum,
