@@ -5,16 +5,15 @@
  * setup quicker.
  */
 
-// Library
 const prompt = require("prompt");	// For reading command line input
 const fs = require("fs");
 const appRootPath = require("app-root-path");
 const packageJsonPath = appRootPath.resolve("package.json");
 const package = require(packageJsonPath);
 const { DiscordBotSettingsMicroservice } = require("@beanc16/microservices-abstraction");
-
-// Telemetry
 const { logger } = require("@beanc16/logger");
+
+const schemaProperties = require("./helpers/firstTimeSetup");
 
 
 
@@ -23,109 +22,7 @@ prompt.start();
 
 // Create the schema for user input
 const schema = {
-	properties: {
-		botName: {
-			description: `Enter the bot's name.
-				        (Displayed when a user runs the about command.)
-				
-				Bot Name*`
-				.split("\t").join(""),       					// Remove tabs.
-			message: "Bot Name is required.",
-			required: true
-		},
-		
-		author: {
-			description: `Enter the name of the bot's author.
-				        (Displayed when a user runs the about command.)
-				
-				Author/Team Name*`
-				.split("\t").join(""),       					// Remove tabs.
-			message: "Author/Team Name is required.",
-			required: true
-		},
-		
-		description: {
-			description: `Enter the description for the bot's package.json.
-				
-				Package Description*`
-				.split("\t").join(""),       					// Remove tabs.
-			message: "Package Description is required.",
-			required: true
-		},
-
-		defaultPrefix: {
-			description: `Enter the bot's default prefix.
-				
-				Default Prefix`
-				.split("\t").join(""),       					// Remove tabs.
-			default: "bot.",
-			required: false,
-		},
-		
-		creationPurpose: {
-			description: `Enter the reason why the bot is being made.
-				        (Displayed when a user runs the about command.)
-				
-				Creation Purpose`
-				.split("\t").join(""),       					// Remove tabs.
-			required: false,
-		},
-		
-		homeServerInvite: {
-			description: `Enter the a link to the bot's home server.
-				        (Displayed when a user runs the about command.)
-				
-				Home Server Invite`
-				.split("\t").join(""),       					// Remove tabs.
-			required: false,
-		},
-
-		inviteLink: {
-			description: `Enter the a link for users to invite the bot to their server.
-				        (Displayed when a user runs the invite command.)
-				
-				Invite Link`
-				.split("\t").join(""),       					// Remove tabs.
-			required: false,
-		},
-
-		donationLink: {
-			description: `Enter a link for user's to donate money to you.
-				        (Displayed when a user runs the donate command.)
-				
-				Donation Link`
-				.split("\t").join(""),      					// Remove tabs.
-			required: false,
-		},
-		
-		allowCommandsInDms: {
-			description: `Enter whether users should be allowed to run commands in the bot's DMs (true/false).
-				
-				Allow Commands in DMs*`
-				.split("\t").join(""),      					// Remove tabs.
-			message: "Allow Commands in DMs must be a boolean.",
-			pattern: /^(true|false)$/i,
-			default: "true",
-			required: true,
-			before: (value) => (value.toLowerCase() === "true" || value.toLowerCase() === "false")
-								? JSON.parse(value.toLowerCase())
-								: value,						// Parse to boolean.
-		},
-		
-		allowCommandsInServers: {
-			description: `Enter whether users should be allowed to run commands in servers (true/false).
-				
-				Allow Commands in Servers*`
-				.split("\t").join(""),      					// Remove tabs.
-			message: "Allow Commands in DMs must be a boolean.",
-			pattern: /^(true|false)$/i,
-			default: "true",
-			required: true,
-			before: (value) => (value.toLowerCase() === "true" || value.toLowerCase() === "false")
-								? JSON.parse(value.toLowerCase())
-								: value,						// Parse to boolean.
-		},
-	}
+	properties: schemaProperties,
 };
 
 
@@ -141,34 +38,13 @@ prompt.get(schema, function (err, result)
 
 	const { app, data } = _parseResultToBotCreationPayload(result);
 
-	logger.debug("Creating bot...", { app, data });
+	logger.debug("Creating bot settings and app...", { app, data });
 
 	DiscordBotSettingsMicroservice.v1.create({
 		app,
 		data,
 	})
-	.then(function (response)
-	{
-		logger.info(response.data);
-
-		// Update package.json.
-		package.name = app.searchName;
-		package.description = result.description;
-		package.author = result.author;
-
-		fs.writeFile(packageJsonPath, JSON.stringify(package, null, 4), function (err)
-		{
-			if (err)
-			{
-				logger.error("Error updating package.json on first time setup", err);
-			}
-
-			else
-			{
-				logger.info("Successfully updated package.json in first time setup");
-			}
-		});
-	})
+	.then((response) => _writeToPackageJson({ app, response }))
 	.catch(function (err)
 	{
 		logger.error("Error creating bot", err);
@@ -192,6 +68,7 @@ function _parseResultToBotCreationPayload(result)
 
 	const data = {
 		defaultPrefix: result.defaultPrefix,
+		botPrefixIsCaseSensitive: result.botPrefixIsCaseSensitive,
 		allowCommandsInDms: result.allowCommandsInDms,
 		allowCommandsInServers: result.allowCommandsInServers,
 	};
@@ -205,4 +82,27 @@ function _parseResultToBotCreationPayload(result)
 		app,
 		data,
 	};
+}
+
+function _writeToPackageJson({ app, response })
+{
+	logger.info(response.data);
+
+	// Update package.json.
+	package.name = app.searchName;
+	package.description = result.description;
+	package.author = result.author;
+
+	fs.writeFile(packageJsonPath, JSON.stringify(package, null, 4), function (err)
+	{
+		if (err)
+		{
+			logger.error("Error updating package.json on first time setup", err);
+		}
+
+		else
+		{
+			logger.info("Successfully updated package.json on first time setup");
+		}
+	});
 }
