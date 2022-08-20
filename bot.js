@@ -32,7 +32,7 @@ const CommandsContainer = require('./src/models/CommandsContainer');
  * On Ready
  */
 
-bot.on('ready', function (evt)
+bot.on('ready', function ()
 {
 	const devStr = (process.env.STAGE && process.env.STAGE === "dev")
 		? "-dev"
@@ -144,15 +144,15 @@ function getArgs(message, prefix)
 	if (message.content.startsWith(prefix))
 	{
 		return message.content.slice(prefix.length)
-							  .trim()
-							  .split(/[ \n]+/g);
+								.trim()
+								.split(/[ \n]+/g);
 	}
 	
 	// Bot was pinged, remove the ping and all spacing
 	const userPing = Text.Ping.user(message.author.id);
 	return message.content.slice(userPing.length + 1)
-						  .trim()
-						  .split(/[ \n]+/g);
+							.trim()
+							.split(/[ \n]+/g);
 }
 
 async function runCommands(userCommand, user, userId, channelId, message, args, prefix)
@@ -210,11 +210,11 @@ function noCommandFoundMessage(message, prefix)
 {
     // Send a message to the channel
     message.channel.send("Unknown command\n" +
-                         "Please check `" + prefix + "help` " + 
-						 "to view a list of all available commands\n" +
-						 "Or, check `" + prefix + "help " +
-                         "commandName` for help with a specific " + 
-						 "command");
+                        "Please check `" + prefix + "help` " + 
+						"to view a list of all available commands\n" +
+						"Or, check `" + prefix + "help " +
+                        "commandName` for help with a specific " + 
+						"command");
 }
 
 // Tell the user the permissions they're missing(
@@ -234,8 +234,8 @@ function missingPermsMessage(message, missingPermsArray)
 	
 	// Send a message to the channel
     message.channel.send("You cannot use that command because " + 
-						 "you're missing the following " + 
-						 "permissions:\n" + missingPermsStr);
+						"you're missing the following " + 
+						"permissions:\n" + missingPermsStr);
 }
 
 function _getPrefixForDevEnvironment(prefix)
