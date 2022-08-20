@@ -44,7 +44,7 @@ prompt.get(schema, function (err, result)
 		app,
 		data,
 	})
-	.then((response) => _writeToPackageJson({ app, response }))
+	.then((response) => _writeToPackageJson({ app, response, result }))
 	.catch(function (err)
 	{
 		logger.error("Error creating bot", err);
@@ -84,7 +84,7 @@ function _parseResultToBotCreationPayload(result)
 	};
 }
 
-function _writeToPackageJson({ app, response })
+function _writeToPackageJson({ app, response, result })
 {
 	logger.info(response.data);
 
