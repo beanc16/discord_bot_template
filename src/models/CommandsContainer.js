@@ -22,7 +22,7 @@ class CommandsContainer
         {
             CommandsContainer._abbreviations = Object.values(CommandsContainer._commands).reduce(function (acc, commandNode)
             {
-                if (!!commandNode.abbreviations)
+                if (!!commandNode.abbreviations)    // eslint-disable-line no-extra-boolean-cast
                 {
                     acc.push(...commandNode.abbreviations);
                 }
@@ -96,7 +96,7 @@ class CommandsContainer
             {
                 return commandNode.command;
             }
-        };
+        }
 
         throw new Error(`Unknown command: ${commandName}`);
     }
