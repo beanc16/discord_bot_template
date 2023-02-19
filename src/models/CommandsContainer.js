@@ -47,7 +47,6 @@ class CommandsContainer
             });
         });
 
-        /*
         // Initialize commands in the /src/commands folder
         const commandsDirPath = appRootPath.resolve("./src/commands");
 
@@ -62,7 +61,6 @@ class CommandsContainer
             {
                 const extensionIndex = fileName.indexOf(".js");
                 const commandName = fileName.substring(0, extensionIndex);
-
                 const commandPath = path.join(commandsDirPath, commandName);
                 const command = require(commandPath);
 
@@ -72,7 +70,6 @@ class CommandsContainer
                 });
             }
         });
-        */
     }
 
     static getCommand(commandName)
