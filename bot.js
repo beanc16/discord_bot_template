@@ -10,7 +10,11 @@ const {
 } = require("@beanc16/discordjs-helpers");
 
 // Libraries
-const { Client, GatewayIntentBits } = require('discord.js');
+const {
+	Client,
+	Events,
+	GatewayIntentBits,
+} = require('discord.js');
 
 // Initialize Discord Bot
 const bot = new Client({
@@ -25,6 +29,7 @@ bot.login(process.env.TOKEN);
 // Telemetry
 const { logger } = require("@beanc16/logger");
 const CommandsContainer = require('./src/models/CommandsContainer');
+const SlashCommandsContainer = require('./src/models/SlashCommandsContainer');
 
 
 
@@ -34,11 +39,13 @@ const CommandsContainer = require('./src/models/CommandsContainer');
  * COMMANDS *
  ************/
 
+// TODO: Abstract events behind folder as instructed here: https://discordjs.guide/creating-your-bot/event-handling.html
+
 /**
  * On Ready
  */
 
-bot.on('ready', function ()
+bot.on(Events.ClientReady, function ()
 {
 	const devStr = (process.env.STAGE && process.env.STAGE === "dev")
 		? "-dev"
@@ -53,7 +60,7 @@ bot.on('ready', function ()
  * On Message
  */
 
-bot.on('messageCreate', async function (message)
+bot.on(Events.MessageCreate, async function (message)
 {
 	if (!message.author.bot)
 	{
@@ -113,6 +120,38 @@ bot.on('messageCreate', async function (message)
 		{
 			// TODO: Handle err
 			logger.error(err);
+		});
+	}
+});
+
+
+
+/**
+ * On Interaction
+ */
+
+bot.on(Events.InteractionCreate, async function (interaction)
+{
+	if (!interaction.isChatInputCommand()) return;
+
+	const slashCommand = SlashCommandsContainer.getCommand(interaction.commandName);
+
+	if (!slashCommand)
+	{
+		logger.error(`No command named ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try
+	{
+		await slashCommand.run(interaction);
+	}
+	catch (err)
+	{
+		logger.error(err);
+		await interaction.reply({
+			content: 'An error occurred while executing this command',
+			ephemeral: true,
 		});
 	}
 });

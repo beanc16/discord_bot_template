@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const appRootPath = require("app-root-path");
 const CommandNode = require("./CommandNode");
-const CommonCommands = require("@beanc16/discordjs-common-commands");
+const { commands: commonCommands } = require("@beanc16/discordjs-common-commands");
 
 
 
@@ -39,15 +39,12 @@ class CommandsContainer
     static _initialize()
     {
         // Initialize common commands
-        Object.entries(CommonCommands).forEach(([className, command]) =>
+        Object.values(commonCommands).forEach((command) =>
         {
-            if (className.toLowerCase() !== "basecommand")
-            {
-                CommandsContainer.addCommand({
-                    commandName: command.commandName,
-                    command,
-                });
-            }
+            CommandsContainer.addCommand({
+                commandName: command.commandName,
+                command,
+            });
         });
 
         /*
