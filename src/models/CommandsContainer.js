@@ -72,7 +72,7 @@ class CommandsContainer
                 CommandsContainer.addCommand({
                     commandName,
                     command,
-                })
+                });
             }
         });
         */
@@ -125,7 +125,7 @@ class CommandsContainer
     }
 }
 
-CommandsContainer._initialize();
+CommandsContainer._initialize();    // TODO: Move this to bot.js
 
 
 
