@@ -24,7 +24,6 @@ class SlashCommandsContainer
             });
         });
 
-        /*
         // Initialize commands in the /src/commands-slash folder
         const commandsDirPath = appRootPath.resolve("./src/commands-slash");
 
@@ -39,21 +38,15 @@ class SlashCommandsContainer
             {
                 const extensionIndex = fileName.indexOf(".js");
                 const commandName = fileName.substring(0, extensionIndex);
+                const commandPath = path.join(commandsDirPath, commandName);
+                const command = require(commandPath);
 
-                // TODO: Remove this when the file is moved to an external package
-                if (commandName !== 'BaseSlashCommand')
-                {
-                    const commandPath = path.join(commandsDirPath, commandName);
-                    const command = require(commandPath);
-    
-                    SlashCommandsContainer.addCommand({
-                        commandName,
-                        command,
-                    });
-                }
+                SlashCommandsContainer.addCommand({
+                    commandName,
+                    command,
+                });
             }
         });
-        */
     }
 
 
