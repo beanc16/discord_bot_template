@@ -10,10 +10,16 @@ const {
 } = require("@beanc16/discordjs-helpers");
 
 // Libraries
-const Discord = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
 
 // Initialize Discord Bot
-const bot = new Discord.Client();
+const bot = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+	],
+});
 bot.login(process.env.TOKEN);
 
 // Telemetry
@@ -47,7 +53,7 @@ bot.on('ready', function ()
  * On Message
  */
 
-bot.on('message', async function (message)
+bot.on('messageCreate', async function (message)
 {
 	if (!message.author.bot)
 	{
