@@ -7,8 +7,6 @@ const { slashCommands: commonSlashCommands } = require("@beanc16/discordjs-commo
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
-// TODO: Set up command registration to run on a dev-only command: https://discordjs.guide/creating-your-bot/command-deployment.html#global-commands
-
 class SlashCommandsContainer
 {
     static _slashCommands = {};
