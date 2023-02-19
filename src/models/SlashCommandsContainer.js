@@ -37,12 +37,12 @@ class SlashCommandsContainer
             if (path.extname(fileName).toLowerCase() === ".js")
             {
                 const extensionIndex = fileName.indexOf(".js");
-                const commandName = fileName.substring(0, extensionIndex);
-                const commandPath = path.join(commandsDirPath, commandName);
+                const commandNameFromFileName = fileName.substring(0, extensionIndex);
+                const commandPath = path.join(commandsDirPath, commandNameFromFileName);
                 const command = require(commandPath);
 
                 SlashCommandsContainer.addCommand({
-                    commandName,
+                    commandName: command.commandName,
                     command,
                 });
             }

@@ -135,7 +135,6 @@ bot.on(Events.InteractionCreate, async function (interaction)
 	if (!interaction.isChatInputCommand()) return;
 
 	const slashCommand = SlashCommandsContainer.getCommand(interaction.commandName);
-
 	if (!slashCommand)
 	{
 		logger.error(`No command named ${interaction.commandName} was found.`);
