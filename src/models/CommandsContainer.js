@@ -36,8 +36,7 @@ class CommandsContainer
 
 
 
-    static _initialize()
-    {
+    static { // Static constructor
         // Initialize common commands
         Object.values(commonCommands).forEach((command) =>
         {
@@ -118,8 +117,6 @@ class CommandsContainer
         return CommandsContainer._abbreviationsSet.has(commandName);
     }
 }
-
-CommandsContainer._initialize();    // TODO: Move this to bot.js
 
 
 

@@ -11,8 +11,7 @@ class SlashCommandsContainer
 {
     static _slashCommands = {};
 
-    static _initialize()
-    {
+    static { // Static constructor
         // Initialize common commands
         Object.values(commonSlashCommands).forEach((command) =>
         {
@@ -86,7 +85,6 @@ class SlashCommandsContainer
         logger.info(`Successfully refreshed ${registeredSlashCommandData.length} slash (/) commands`, registeredSlashCommandData);
     }
 }
-SlashCommandsContainer._initialize();   // TODO: Move this to bot.js and regiserSlashCommands
 
 
 
