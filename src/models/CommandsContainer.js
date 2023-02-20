@@ -9,7 +9,7 @@ const { commands: commonCommands } = require("@beanc16/discordjs-common-commands
 class CommandsContainer
 {
     static _commands = {};
-    static _abbreviations = []; // TODO: Make this a Set.
+    static _abbreviationsSet = new Set();
 
     static get commandNames()
     {
@@ -18,20 +18,20 @@ class CommandsContainer
 
     static get abbreviations()
     {
-        if (CommandsContainer._abbreviations.length === 0)
+        if (CommandsContainer._abbreviationsSet.size === 0)
         {
-            CommandsContainer._abbreviations = Object.values(CommandsContainer._commands).reduce(function (acc, commandNode)
+            CommandsContainer._abbreviationsSet = Object.values(CommandsContainer._commands).reduce(function (acc, commandNode)
             {
                 if (!!commandNode.abbreviations)    // eslint-disable-line no-extra-boolean-cast
                 {
-                    acc.push(...commandNode.abbreviations);
+                    acc.add(commandNode.abbreviations);
                 }
 
                 return acc;
-            }, []);
+            }, new Set());
         }
 
-        return CommandsContainer._abbreviations;
+        return [...CommandsContainer._abbreviationsSet];
     }
 
 
@@ -115,7 +115,7 @@ class CommandsContainer
 
     static hasAbbreviation(commandName)
     {
-        return CommandsContainer._abbreviations.includes(commandName);
+        return CommandsContainer._abbreviationsSet.has(commandName);
     }
 }
 
